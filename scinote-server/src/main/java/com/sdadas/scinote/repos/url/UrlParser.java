@@ -78,7 +78,8 @@ public class UrlParser {
                 if(domain.isUnderRegistrySuffix()) {
                     String domainName = domain.topDomainUnderRegistrySuffix().toString();
                     if(StringUtils.equalsIgnoreCase(domainName, "doi.org")) {
-                        results.add(detectedUrl.getOriginalUrl());
+                        Matcher matcher = DOI_PATTERN.matcher(detectedUrl.getOriginalUrl());
+                        if(matcher.find()) results.add(detectedUrl.getOriginalUrl());
                     }
                 }
             } catch (IllegalArgumentException ex) {

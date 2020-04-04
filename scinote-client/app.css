@@ -16,7 +16,6 @@ body {
 
 .search-input {
     font-size: 1.5em;
-    min-width: 600px;
     width: 80%;
     margin-bottom: 30px;
 }
@@ -27,7 +26,8 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 800px;
+    width: 100%;
+    max-width: 800px;
 }
 
 .results-panel {
