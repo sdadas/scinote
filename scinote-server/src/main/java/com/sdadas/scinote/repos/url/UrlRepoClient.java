@@ -35,22 +35,23 @@ public class UrlRepoClient implements RepoClient {
 
     @Override
     public PaperId supports(String query) {
-        String url = getUrl(query);
-        return url != null ? new PaperId(repoId(), url) : null;
+        Url url = getUrl(query);
+        return url != null ? new PaperId(repoId(), url.getOriginalUrl()) : null;
     }
 
     @Override
     public List<Paper> search(String query) throws Exception {
-        String url = getUrl(query);
-        PaperId id = new PaperId("url", url);
-        if(StringUtils.isBlank(url)) return Collections.emptyList();
+        Url url = getUrl(query);
+        String originalUrl = url != null ? url.getOriginalUrl() : null;
+        if(StringUtils.isBlank(originalUrl)) return Collections.emptyList();
+        PaperId id = new PaperId("url", originalUrl);
         UrlParser parser = new UrlParser(url);
         parser.download();
         List<String> dois = parser.findDOI();
         if(!dois.isEmpty()) {
             RepeatSearch context = new RepeatSearch(dois.get(0));
             context.addUpdateId(id);
-            context.addUpdateUrl(new WebLocation("html", url));
+            context.addUpdateUrl(new WebLocation("html", originalUrl));
             throw new RepeatSearchException(context);
         }
         return Collections.singletonList(parser.parse());
@@ -66,7 +67,7 @@ public class UrlRepoClient implements RepoClient {
     }
 
     @SuppressWarnings("UnstableApiUsage")
-    private String getUrl(String query) {
+    private Url getUrl(String query) {
         if(!StringUtils.startsWithAny(query.toLowerCase(), "http://", "https://")) return null;
         UrlDetector detector = new UrlDetector(query, UrlDetectorOptions.Default);
         List<Url> detected = detector.detect();
@@ -74,6 +75,6 @@ public class UrlRepoClient implements RepoClient {
         Url url = detected.get(0);
         String host = url.getHost();
         boolean publicDomain = InternetDomainName.from(host).isUnderPublicSuffix();
-        return publicDomain ? url.getOriginalUrl() : null;
+        return publicDomain ? url : null;
     }
 }

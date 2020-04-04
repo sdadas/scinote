@@ -1,0 +1,53 @@
+@import 'antd/dist/antd.css';
+
+body {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+}
+
+.search-title {
+    font-size: 3em;
+    color: #557380;
+    margin-bottom: 0.3em;
+}
+
+.search-input {
+    font-size: 1.5em;
+    min-width: 600px;
+    width: 80%;
+    margin-bottom: 30px;
+}
+
+.search-panel {
+    display: flex;
+    background: #fff;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 800px;
+}
+
+.results-panel {
+    width: 100%;
+}
+
+.paper-title {
+    font-size: 1.4em;
+    margin-bottom: 0;
+    color: #35474f;
+}
+
+.paper-card {
+    width: 100%;
+    padding: 5px 20px;
+    margin-bottom: 20px;
+    background: #f9fafb;
+}
+
+.paper-links {
+    margin-top: 0.2em;
+    float: right;
+}

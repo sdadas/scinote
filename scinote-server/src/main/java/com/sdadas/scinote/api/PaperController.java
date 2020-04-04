@@ -4,6 +4,7 @@ import com.sdadas.scinote.repos.ReposService;
 import com.sdadas.scinote.repos.shared.model.Paper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,7 @@ import java.util.List;
 /**
  * @author Sławomir Dadas
  */
+@CrossOrigin
 @RestController
 public class PaperController {
 

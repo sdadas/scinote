@@ -42,17 +42,17 @@ public class UrlParser {
 
     private static final Pattern YEAR_PATTERN = Pattern.compile("\\d{4}");
 
-    private final String url;
+    private final Url url;
 
     private Document document;
 
-    public UrlParser(String url) {
+    public UrlParser(Url url) {
         this.url = url;
     }
 
     public void download() throws IOException {
         SSLSocketFactory sf = socketFactory();
-        Connection.Response resp = Jsoup.connect(url)
+        Connection.Response resp = Jsoup.connect(url.getOriginalUrl())
                 .sslSocketFactory(sf)
                 .maxBodySize(10 * 1024 * 1024)
                 .timeout(10000)
@@ -99,10 +99,10 @@ public class UrlParser {
         String metaUrl = firstNotBlankKey(meta, "citation_public_url", "og:url");
         String title = firstNotBlankKey(meta, "citation_title", "DC.Title", "og:title");
         Paper paper = new Paper();
-        if(StringUtils.isNotBlank(metaUrl) && !StringUtils.equals(metaUrl, url)) {
+        if(StringUtils.isNotBlank(metaUrl) && !StringUtils.equals(metaUrl, url.getOriginalUrl())) {
             paper.addId(new PaperId("url", metaUrl));
         }
-        paper.addId(new PaperId("url", url));
+        paper.addId(new PaperId("url", url.getOriginalUrl()));
         paper.setTitle(firstNotBlank(title, document.title()));
         paper.setType(PaperType.MISC);
         paper.setKeywords(getKeywords(meta));
@@ -120,8 +120,21 @@ public class UrlParser {
         Source source = paper.getSource();
         if(StringUtils.isNotBlank(source.getName())) {
             paper.setType(PaperType.ARTICLE);
+        } else {
+            paper.getSource().setName(getDomain());
         }
         return paper;
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    private String getDomain() {
+        String host = url.getHost();
+        try {
+            InternetDomainName domain = InternetDomainName.from(host).topDomainUnderRegistrySuffix();
+            return domain.toString();
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     private List<Author> createAuthors(MultiValueMap<String, String> meta) {
@@ -179,7 +192,7 @@ public class UrlParser {
     private List<WebLocation> createUrls(MultiValueMap<String, String> meta) {
         String metaUrl = firstNotBlankKey(meta, "citation_public_url", "og:url");
         List<WebLocation> results = new ArrayList<>();
-        results.add(new WebLocation("html", firstNotBlank(metaUrl, url)));
+        results.add(new WebLocation("html", firstNotBlank(metaUrl, url.getOriginalUrl())));
         String pdfUrl = firstNotBlankKey(meta, "citation_pdf_url");
         if (StringUtils.isNotBlank(pdfUrl)) {
             results.add(new WebLocation("pdf", pdfUrl));
