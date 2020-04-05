@@ -30,8 +30,8 @@ public class CrossRefRepoClient implements RepoClient {
     private final CrossRefTypeMapper mapper;
 
     @Autowired
-    public CrossRefRepoClient(CrossRefRestClient client) {
-        this.client = client;
+    public CrossRefRepoClient() {
+        this.client = new CrossRefRestClient();
         this.mapper = new CrossRefTypeMapper();
     }
 

@@ -2,6 +2,10 @@
 
 body {
     margin-top: 60px;
+}
+
+#app {
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -15,9 +19,22 @@ body {
 }
 
 .search-input {
-    font-size: 1.5em;
     width: 80%;
     margin-bottom: 30px;
+}
+
+.search-input input {
+    font-size: 1.2em;
+}
+
+.search-upload {
+    color: #bbb;
+    font-size: 1.1em;
+}
+
+.search-upload button {
+    padding: 0;
+    font-size: 1.1em;
 }
 
 .search-panel {

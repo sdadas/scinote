@@ -21,6 +21,10 @@ class APIService {
     public search(query: string): Promise<Paper[]> {
         return fetch(`${this.baseURL}/search?q=${query}`).then((res) => res.json());
     }
+
+    public parseUrl(): string {
+        return `${this.baseURL}/parse`;
+    }
 }
 
 export const api: APIService = new APIService();

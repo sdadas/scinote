@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 /**
  * @author Sławomir Dadas
  */
-@Component
 public class CrossRefRestClient extends RestClientBase {
 
     public CrossRefResponse search(String doi) {

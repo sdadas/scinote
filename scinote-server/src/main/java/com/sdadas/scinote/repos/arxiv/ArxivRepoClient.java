@@ -27,8 +27,8 @@ public class ArxivRepoClient implements RepoClient {
 
     private final ArxivRestClient client;
 
-    public ArxivRepoClient(ArxivRestClient client) {
-        this.client = client;
+    public ArxivRepoClient() {
+        this.client = new ArxivRestClient();
     }
 
     @Override

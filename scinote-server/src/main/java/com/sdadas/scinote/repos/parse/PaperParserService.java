@@ -1,17 +1,12 @@
-package com.sdadas.scinote.repos;
+package com.sdadas.scinote.repos.parse;
 
 import com.sdadas.scinote.repos.parse.model.ParseRequest;
 import com.sdadas.scinote.repos.parse.model.ParseResponse;
-import com.sdadas.scinote.repos.shared.model.Paper;
-
-import java.util.List;
 
 /**
  * @author Sławomir Dadas
  */
-public interface ReposService {
-
-    List<Paper> query(String query);
+public interface PaperParserService {
 
     ParseResponse parse(ParseRequest request);
 }

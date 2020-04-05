@@ -1,6 +1,9 @@
 package com.sdadas.scinote.repos.doi;
 
-import com.sdadas.scinote.repos.doi.model.*;
+import com.sdadas.scinote.repos.doi.model.CrossRefAuthor;
+import com.sdadas.scinote.repos.doi.model.CrossRefDate;
+import com.sdadas.scinote.repos.doi.model.CrossRefPaper;
+import com.sdadas.scinote.repos.doi.model.CrossRefResponse;
 import com.sdadas.scinote.repos.shared.model.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -8,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

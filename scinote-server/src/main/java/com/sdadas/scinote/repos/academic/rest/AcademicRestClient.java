@@ -42,7 +42,7 @@ public class AcademicRestClient extends RestClientBase {
 
     @SuppressWarnings("all")
     public EvaluateResponse evaluate(EvaluateRequest request) {
-        RequestEntity<String> entity = request(path("evaluate"), request, "");
+        RequestEntity<String> entity = request(path("evaluate"), request.queryParams(), "");
         limiter.acquire();
         String json;
         try {

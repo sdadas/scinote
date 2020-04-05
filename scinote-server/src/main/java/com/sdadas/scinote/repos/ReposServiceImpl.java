@@ -1,5 +1,8 @@
 package com.sdadas.scinote.repos;
 
+import com.sdadas.scinote.repos.parse.PaperParserService;
+import com.sdadas.scinote.repos.parse.model.ParseRequest;
+import com.sdadas.scinote.repos.parse.model.ParseResponse;
 import com.sdadas.scinote.repos.shared.RepoClient;
 import com.sdadas.scinote.repos.shared.exception.RepeatSearch;
 import com.sdadas.scinote.repos.shared.exception.RepeatSearchException;
@@ -8,6 +11,7 @@ import com.sdadas.scinote.repos.shared.model.PaperId;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,9 +29,12 @@ public class ReposServiceImpl implements ReposService {
 
     private final List<RepoClient> repos;
 
-    public ReposServiceImpl(List<RepoClient> repos) {
+    private final PaperParserService parser;
+
+    public ReposServiceImpl(List<RepoClient> repos, PaperParserService parser) {
         repos.sort(Comparator.comparingInt(RepoClient::priority));
         this.repos = repos;
+        this.parser = parser;
     }
 
     @Override
@@ -41,6 +48,11 @@ public class ReposServiceImpl implements ReposService {
             }
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public ParseResponse parse(ParseRequest request) {
+        return parser.parse(request);
     }
 
     private List<Paper> query(String query, RepoClient repo) {

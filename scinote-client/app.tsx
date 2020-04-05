@@ -13,11 +13,9 @@ export class Application extends React.Component<any, any> {
     render(): React.ReactElement {
         return (
             <HashRouter>
-                <Layout>
-                    <Switch>
-                        <Route exact path="/" component={HomeView}  />
-                    </Switch>
-                </Layout>
+                <Switch>
+                    <Route exact path="/" component={HomeView}  />
+                </Switch>
             </HashRouter>
         );
     }
