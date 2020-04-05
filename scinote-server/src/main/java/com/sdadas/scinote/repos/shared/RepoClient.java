@@ -1,7 +1,7 @@
 package com.sdadas.scinote.repos.shared;
 
-import com.sdadas.scinote.repos.shared.model.Paper;
-import com.sdadas.scinote.repos.shared.model.PaperId;
+import com.sdadas.scinote.shared.model.paper.Paper;
+import com.sdadas.scinote.shared.model.paper.PaperId;
 
 import java.util.List;
 

@@ -3,12 +3,6 @@ package com.sdadas.scinote.repos.arxiv.model;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import com.sdadas.scinote.repos.shared.model.Author;
-import com.sdadas.scinote.repos.shared.model.Paper;
-import com.sdadas.scinote.repos.shared.model.PaperId;
-import com.sdadas.scinote.repos.shared.model.WebLocation;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.List;

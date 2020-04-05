@@ -1,6 +1,6 @@
 package com.sdadas.scinote.repos.doi;
 
-import com.sdadas.scinote.repos.shared.model.PaperType;
+import com.sdadas.scinote.shared.model.paper.PaperType;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 

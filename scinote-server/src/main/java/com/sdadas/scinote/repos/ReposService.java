@@ -2,7 +2,7 @@ package com.sdadas.scinote.repos;
 
 import com.sdadas.scinote.repos.parse.model.ParseRequest;
 import com.sdadas.scinote.repos.parse.model.ParseResponse;
-import com.sdadas.scinote.repos.shared.model.Paper;
+import com.sdadas.scinote.shared.model.paper.Paper;
 
 import java.util.List;
 

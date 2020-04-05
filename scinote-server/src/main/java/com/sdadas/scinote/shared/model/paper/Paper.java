@@ -1,4 +1,9 @@
-package com.sdadas.scinote.repos.shared.model;
+package com.sdadas.scinote.shared.model.paper;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.sdadas.scinote.repos.academic.model.AcademicPaper;
+import com.sdadas.scinote.shared.Named;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -8,7 +13,14 @@ import java.util.List;
 /**
  * @author Sławomir Dadas
  */
-public class Paper implements Serializable {
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, property="v", defaultImpl = Paper.class)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = Paper.class, name = "standard"),
+    @JsonSubTypes.Type(value = AcademicPaper.class, name = "academic"),
+})
+public class Paper implements Serializable, Named {
+
+    private String uid;
 
     private List<PaperId> ids = new ArrayList<>();
 
@@ -39,6 +51,14 @@ public class Paper implements Serializable {
     private String doi;
 
     private List<String> keywords = new ArrayList<>();
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public List<PaperId> getIds() {
         return ids;
@@ -174,5 +194,14 @@ public class Paper implements Serializable {
 
     public void setKeywords(List<String> keywords) {
         this.keywords = keywords;
+    }
+
+    @Override
+    public String name() {
+        return title;
+    }
+
+    public boolean hasPaperId(PaperId id) {
+        return ids.indexOf(id) >= 0;
     }
 }

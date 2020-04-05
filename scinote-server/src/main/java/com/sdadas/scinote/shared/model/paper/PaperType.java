@@ -1,4 +1,4 @@
-package com.sdadas.scinote.repos.shared.model;
+package com.sdadas.scinote.shared.model.paper;
 
 /**
  * @author Sławomir Dadas

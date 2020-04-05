@@ -4,7 +4,7 @@ import com.sdadas.scinote.repos.doi.model.CrossRefAuthor;
 import com.sdadas.scinote.repos.doi.model.CrossRefDate;
 import com.sdadas.scinote.repos.doi.model.CrossRefPaper;
 import com.sdadas.scinote.repos.doi.model.CrossRefResponse;
-import com.sdadas.scinote.repos.shared.model.*;
+import com.sdadas.scinote.shared.model.paper.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 

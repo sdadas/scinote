@@ -7,9 +7,9 @@ import com.linkedin.urls.detection.UrlDetectorOptions;
 import com.sdadas.scinote.repos.shared.RepoClient;
 import com.sdadas.scinote.repos.shared.exception.RepeatSearch;
 import com.sdadas.scinote.repos.shared.exception.RepeatSearchException;
-import com.sdadas.scinote.repos.shared.model.Paper;
-import com.sdadas.scinote.repos.shared.model.PaperId;
-import com.sdadas.scinote.repos.shared.model.WebLocation;
+import com.sdadas.scinote.shared.model.paper.Paper;
+import com.sdadas.scinote.shared.model.paper.PaperId;
+import com.sdadas.scinote.shared.model.paper.WebLocation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 

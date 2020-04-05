@@ -4,7 +4,7 @@ import com.sdadas.scinote.repos.ReposService;
 import com.sdadas.scinote.repos.parse.PaperParserService;
 import com.sdadas.scinote.repos.parse.model.ParseRequest;
 import com.sdadas.scinote.repos.parse.model.ParseResponse;
-import com.sdadas.scinote.repos.shared.model.Paper;
+import com.sdadas.scinote.shared.model.paper.Paper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;

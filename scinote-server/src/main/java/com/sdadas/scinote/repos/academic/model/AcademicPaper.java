@@ -1,7 +1,6 @@
 package com.sdadas.scinote.repos.academic.model;
 
-import com.sdadas.scinote.repos.shared.model.*;
-import org.apache.commons.lang3.ObjectUtils;
+import com.sdadas.scinote.shared.model.paper.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
@@ -21,6 +20,9 @@ public class AcademicPaper extends Paper {
     private List<Long> reverseReferences;
 
     private String bt;
+
+    public AcademicPaper() {
+    }
 
     @SuppressWarnings("unchecked")
     public AcademicPaper(Map<String, Object> entity, Map<String, Object> extensions) {

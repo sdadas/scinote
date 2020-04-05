@@ -6,7 +6,7 @@ import com.google.common.net.InternetDomainName;
 import com.linkedin.urls.Url;
 import com.linkedin.urls.detection.UrlDetector;
 import com.linkedin.urls.detection.UrlDetectorOptions;
-import com.sdadas.scinote.repos.shared.model.*;
+import com.sdadas.scinote.shared.model.paper.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;

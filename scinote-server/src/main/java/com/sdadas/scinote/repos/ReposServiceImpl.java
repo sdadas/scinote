@@ -6,18 +6,16 @@ import com.sdadas.scinote.repos.parse.model.ParseResponse;
 import com.sdadas.scinote.repos.shared.RepoClient;
 import com.sdadas.scinote.repos.shared.exception.RepeatSearch;
 import com.sdadas.scinote.repos.shared.exception.RepeatSearchException;
-import com.sdadas.scinote.repos.shared.model.Paper;
-import com.sdadas.scinote.repos.shared.model.PaperId;
+import com.sdadas.scinote.repos.shared.model.Query;
+import com.sdadas.scinote.shared.model.paper.Paper;
+import com.sdadas.scinote.shared.model.paper.PaperId;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Sławomir Dadas
@@ -31,19 +29,25 @@ public class ReposServiceImpl implements ReposService {
 
     private final PaperParserService parser;
 
-    public ReposServiceImpl(List<RepoClient> repos, PaperParserService parser) {
+    private final PaperCache cache;
+
+    public ReposServiceImpl(List<RepoClient> repos, PaperParserService parser, PaperCache cache) {
         repos.sort(Comparator.comparingInt(RepoClient::priority));
         this.repos = repos;
         this.parser = parser;
+        this.cache = cache;
     }
 
     @Override
     public List<Paper> query(String query) {
         query = StringUtils.strip(query);
         if(StringUtils.isBlank(query)) return Collections.emptyList();
+        List<Paper> cached = getFromCache(query);
+        if(cached != null) return cached;
         for (RepoClient repo : repos) {
             List<Paper> results = query(query, repo);
             if(results != null) {
+                cache.saveQuery(query.toLowerCase(), results);
                 return results;
             }
         }
@@ -52,24 +56,41 @@ public class ReposServiceImpl implements ReposService {
 
     @Override
     public ParseResponse parse(ParseRequest request) {
-        return parser.parse(request);
+        ParseResponse response = parser.parse(request);
+        Paper paper = response.getPaper();
+        if(paper != null) {
+            PaperId paperId = paper.getIds().get(0);
+            Paper cached = cache.getPaper(paperId);
+            if(cached != null) {
+                response.setPaper(cached);
+            } else {
+                cache.savePaper(paper);
+            }
+        }
+        return response;
     }
 
     private List<Paper> query(String query, RepoClient repo) {
         PaperId paperId = repo.supports(query);
         if(paperId != null) {
-            // TODO: check if is in cache
+            Paper paper = cache.getPaper(paperId);
+            if(paper != null) {
+                LOG.debug("Paper found in cache for id '{}'", paperId.toString());
+                return Collections.singletonList(paper);
+            }
             LOG.debug("Query '{}' matched {} repository", query, repo.repoId());
             try {
                 List<Paper> search = repo.search(query);
-                // TODO: save in cache
+                if(search != null) search.forEach(cache::savePaper);
                 return search;
             } catch (RepeatSearchException ex) {
                 RepeatSearch context = ex.getContext();
                 LOG.debug("Repeat search from '{}' to '{}'", query, context.getQuery());
                 List<Paper> results = query(context.getQuery());
-                if(results != null) results.forEach(context::updatePaper);
-                // TODO: save in cache
+                if(results != null) {
+                    results.forEach(context::updatePaper);
+                    results.forEach(cache::savePaper);
+                }
                 return results;
             } catch (Exception e) {
                 LOG.error("Repository failed " + repo.getClass().getSimpleName(), e);
@@ -77,6 +98,47 @@ public class ReposServiceImpl implements ReposService {
             }
         } else {
             return null;
+        }
+    }
+
+    private List<Paper> getFromCache(String q) {
+        Query query = cache.getQuery(q);
+        if(query == null) return null;
+        LOG.debug("Query found in cache '{}'", q);
+        List<PaperId> paperIds = query.getResults();
+        List<Paper> cached = cache.getPapers(paperIds);
+        Set<PaperId> missing = new LinkedHashSet<>(paperIds);
+        Map<PaperId, Paper> results = new LinkedHashMap<>();
+        paperIds.forEach(id -> results.put(id, null));
+        for (Paper paper : cached) {
+            for (PaperId id : paper.getIds()) {
+                if(!results.containsKey(id)) continue;
+                results.put(id, paper);
+                missing.remove(id);
+            }
+        }
+        if(missing.isEmpty()) return new ArrayList<>(results.values());
+        for (RepoClient repo : repos) {
+            updateFromRepo(repo, results, missing);
+        }
+        return results.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    private void updateFromRepo(RepoClient repo, Map<PaperId, Paper> results, Set<PaperId> missing) {
+        String repoId = repo.repoId();
+        List<PaperId> ids = missing.stream().filter(val -> val.getRepo().equals(repoId)).collect(Collectors.toList());
+        try {
+            List<Paper> papers = repo.load(ids);
+            for (Paper paper : papers) {
+                for (PaperId id : paper.getIds()) {
+                    if(!results.containsKey(id)) continue;
+                    results.put(id, paper);
+                    missing.remove(id);
+                }
+                cache.savePaper(paper);
+            }
+        } catch (Exception e) {
+            LOG.error("Repository failed " + repo.getClass().getSimpleName(), e);
         }
     }
 }

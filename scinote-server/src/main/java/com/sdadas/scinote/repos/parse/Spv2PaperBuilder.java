@@ -3,10 +3,10 @@ package com.sdadas.scinote.repos.parse;
 import com.sdadas.scinote.repos.parse.model.Spv2Doc;
 import com.sdadas.scinote.repos.parse.model.Spv2Response;
 import com.sdadas.scinote.repos.shared.exception.ExternalServiceException;
-import com.sdadas.scinote.repos.shared.model.Author;
-import com.sdadas.scinote.repos.shared.model.Paper;
-import com.sdadas.scinote.repos.shared.model.PaperId;
-import com.sdadas.scinote.repos.shared.model.PaperType;
+import com.sdadas.scinote.shared.model.paper.Author;
+import com.sdadas.scinote.shared.model.paper.Paper;
+import com.sdadas.scinote.shared.model.paper.PaperId;
+import com.sdadas.scinote.shared.model.paper.PaperType;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;

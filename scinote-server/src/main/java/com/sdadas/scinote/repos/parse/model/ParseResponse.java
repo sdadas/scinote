@@ -1,6 +1,6 @@
 package com.sdadas.scinote.repos.parse.model;
 
-import com.sdadas.scinote.repos.shared.model.Paper;
+import com.sdadas.scinote.shared.model.paper.Paper;
 
 import java.io.Serializable;
 

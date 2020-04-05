@@ -1,8 +1,8 @@
 package com.sdadas.scinote.repos.shared.exception;
 
-import com.sdadas.scinote.repos.shared.model.Paper;
-import com.sdadas.scinote.repos.shared.model.PaperId;
-import com.sdadas.scinote.repos.shared.model.WebLocation;
+import com.sdadas.scinote.shared.model.paper.Paper;
+import com.sdadas.scinote.shared.model.paper.PaperId;
+import com.sdadas.scinote.shared.model.paper.WebLocation;
 
 import java.io.Serializable;
 import java.util.ArrayList;

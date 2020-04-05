@@ -3,8 +3,8 @@ package com.sdadas.scinote.repos.arxiv;
 import com.sdadas.scinote.repos.arxiv.model.ArxivResponse;
 import com.sdadas.scinote.repos.arxiv.rest.ArxivRestClient;
 import com.sdadas.scinote.repos.shared.RepoClient;
-import com.sdadas.scinote.repos.shared.model.Paper;
-import com.sdadas.scinote.repos.shared.model.PaperId;
+import com.sdadas.scinote.shared.model.paper.Paper;
+import com.sdadas.scinote.shared.model.paper.PaperId;
 import com.sdadas.scinote.repos.shared.utils.MultiRegexMatcher;
 import org.springframework.stereotype.Component;
 

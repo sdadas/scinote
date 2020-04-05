@@ -4,10 +4,10 @@ import com.sdadas.scinote.repos.arxiv.model.ArxivAuthor;
 import com.sdadas.scinote.repos.arxiv.model.ArxivEntry;
 import com.sdadas.scinote.repos.arxiv.model.ArxivLink;
 import com.sdadas.scinote.repos.arxiv.model.ArxivResponse;
-import com.sdadas.scinote.repos.shared.model.Author;
-import com.sdadas.scinote.repos.shared.model.Paper;
-import com.sdadas.scinote.repos.shared.model.PaperId;
-import com.sdadas.scinote.repos.shared.model.WebLocation;
+import com.sdadas.scinote.shared.model.paper.Author;
+import com.sdadas.scinote.shared.model.paper.Paper;
+import com.sdadas.scinote.shared.model.paper.PaperId;
+import com.sdadas.scinote.shared.model.paper.WebLocation;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
