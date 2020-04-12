@@ -39,7 +39,7 @@ public class ReposServiceImpl implements ReposService {
     }
 
     @Override
-    public List<Paper> query(String query) {
+    public List<Paper> papersByQuery(String query) {
         query = StringUtils.strip(query);
         if(StringUtils.isBlank(query)) return Collections.emptyList();
         List<Paper> cached = getFromCache(query);
@@ -52,6 +52,26 @@ public class ReposServiceImpl implements ReposService {
             }
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public List<Paper> papersByIds(List<PaperId> paperIds) {
+        List<Paper> cached = cache.getPapers(paperIds);
+        Set<PaperId> missing = new LinkedHashSet<>(paperIds);
+        Map<PaperId, Paper> results = new LinkedHashMap<>();
+        paperIds.forEach(id -> results.put(id, null));
+        for (Paper paper : cached) {
+            for (PaperId id : paper.getIds()) {
+                if(!results.containsKey(id)) continue;
+                results.put(id, paper);
+                missing.remove(id);
+            }
+        }
+        if(missing.isEmpty()) return new ArrayList<>(results.values());
+        for (RepoClient repo : repos) {
+            updateFromRepo(repo, results, missing);
+        }
+        return results.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     @Override
@@ -86,7 +106,7 @@ public class ReposServiceImpl implements ReposService {
             } catch (RepeatSearchException ex) {
                 RepeatSearch context = ex.getContext();
                 LOG.debug("Repeat search from '{}' to '{}'", query, context.getQuery());
-                List<Paper> results = query(context.getQuery());
+                List<Paper> results = papersByQuery(context.getQuery());
                 if(results != null) {
                     results.forEach(context::updatePaper);
                     results.forEach(cache::savePaper);
@@ -106,22 +126,7 @@ public class ReposServiceImpl implements ReposService {
         if(query == null) return null;
         LOG.debug("Query found in cache '{}'", q);
         List<PaperId> paperIds = query.getResults();
-        List<Paper> cached = cache.getPapers(paperIds);
-        Set<PaperId> missing = new LinkedHashSet<>(paperIds);
-        Map<PaperId, Paper> results = new LinkedHashMap<>();
-        paperIds.forEach(id -> results.put(id, null));
-        for (Paper paper : cached) {
-            for (PaperId id : paper.getIds()) {
-                if(!results.containsKey(id)) continue;
-                results.put(id, paper);
-                missing.remove(id);
-            }
-        }
-        if(missing.isEmpty()) return new ArrayList<>(results.values());
-        for (RepoClient repo : repos) {
-            updateFromRepo(repo, results, missing);
-        }
-        return results.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
+        return papersByIds(paperIds);
     }
 
     private void updateFromRepo(RepoClient repo, Map<PaperId, Paper> results, Set<PaperId> missing) {

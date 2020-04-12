@@ -30,7 +30,7 @@ public class PaperController {
 
     @GetMapping(path = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Paper> search(@RequestParam String q) {
-        return service.query(q);
+        return service.papersByQuery(q);
     }
 
     @PostMapping(path = "/parse", produces = MediaType.APPLICATION_JSON_VALUE)

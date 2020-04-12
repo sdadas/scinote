@@ -202,6 +202,10 @@ public class Paper implements Serializable, Named {
     }
 
     public boolean hasPaperId(PaperId id) {
-        return ids.indexOf(id) >= 0;
+        return ids.contains(id);
+    }
+
+    public PaperId firstPaperId() {
+        return ids.isEmpty() ? null : ids.get(0);
     }
 }

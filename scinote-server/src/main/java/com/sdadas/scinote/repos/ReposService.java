@@ -3,6 +3,7 @@ package com.sdadas.scinote.repos;
 import com.sdadas.scinote.repos.parse.model.ParseRequest;
 import com.sdadas.scinote.repos.parse.model.ParseResponse;
 import com.sdadas.scinote.shared.model.paper.Paper;
+import com.sdadas.scinote.shared.model.paper.PaperId;
 
 import java.util.List;
 
@@ -11,7 +12,9 @@ import java.util.List;
  */
 public interface ReposService {
 
-    List<Paper> query(String query);
+    List<Paper> papersByQuery(String query);
+
+    List<Paper> papersByIds(List<PaperId> ids);
 
     ParseResponse parse(ParseRequest request);
 }

@@ -151,4 +151,14 @@ public class AcademicPaper extends Paper {
     public void setBt(String bt) {
         this.bt = bt;
     }
+
+    public List<PaperId> referencesAsPaperIds() {
+        if(references == null) return new ArrayList<>();
+        return references.stream().map(ref -> new PaperId("academic", String.valueOf(ref))).collect(Collectors.toList());
+    }
+
+    public List<PaperId> reverseReferencesAsPaperIds() {
+        if(reverseReferences == null) return new ArrayList<>();
+        return reverseReferences.stream().map(ref -> new PaperId("academic", String.valueOf(ref))).collect(Collectors.toList());
+    }
 }
