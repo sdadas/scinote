@@ -19,7 +19,7 @@ public class Project implements Serializable {
 
     private String title;
 
-    private List<String> tags;
+    private Set<String> tags = new LinkedHashSet<>();
 
     private Set<ProjectPaper> accepted = new LinkedHashSet<>();
 
@@ -45,11 +45,11 @@ public class Project implements Serializable {
         this.title = title;
     }
 
-    public List<String> getTags() {
+    public Set<String> getTags() {
         return tags;
     }
 
-    public void setTags(List<String> tags) {
+    public void setTags(Set<String> tags) {
         this.tags = tags;
     }
 

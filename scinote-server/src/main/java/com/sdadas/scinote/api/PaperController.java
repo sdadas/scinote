@@ -5,6 +5,7 @@ import com.sdadas.scinote.repos.parse.PaperParserService;
 import com.sdadas.scinote.repos.parse.model.ParseRequest;
 import com.sdadas.scinote.repos.parse.model.ParseResponse;
 import com.sdadas.scinote.shared.model.paper.Paper;
+import com.sdadas.scinote.shared.model.paper.PaperId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Sławomir Dadas
@@ -31,6 +33,12 @@ public class PaperController {
     @GetMapping(path = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Paper> search(@RequestParam String q) {
         return service.papersByQuery(q);
+    }
+
+    @GetMapping(path = "/papers", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Paper> papers(@RequestParam List<String> id) {
+        List<PaperId> paperIds = id.stream().map(val -> PaperId.fromString(val, ",")).collect(Collectors.toList());
+        return service.papersByIds(paperIds);
     }
 
     @PostMapping(path = "/parse", produces = MediaType.APPLICATION_JSON_VALUE)

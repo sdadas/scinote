@@ -1,5 +1,7 @@
 package com.sdadas.scinote.shared.model.paper;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -11,6 +13,12 @@ public class PaperId implements Serializable {
     private String repo;
 
     private String id;
+
+    public static PaperId fromString(String string, String sep) {
+        String repo = StringUtils.substringBefore(string, sep);
+        String id = StringUtils.substringAfter(string, sep);
+        return new PaperId(repo, id);
+    }
 
     public PaperId() {
     }
