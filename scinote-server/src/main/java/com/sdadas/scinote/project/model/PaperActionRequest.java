@@ -2,12 +2,10 @@ package com.sdadas.scinote.project.model;
 
 import com.sdadas.scinote.shared.model.paper.PaperId;
 
-import java.io.Serializable;
-
 /**
  * @author Sławomir Dadas
  */
-public class PaperActionRequest implements Serializable {
+public class PaperActionRequest implements PaperBaseAction {
 
     private String projectId;
 
@@ -15,6 +13,7 @@ public class PaperActionRequest implements Serializable {
 
     private PaperAction action;
 
+    @Override
     public String getProjectId() {
         return projectId;
     }
@@ -23,6 +22,7 @@ public class PaperActionRequest implements Serializable {
         this.projectId = projectId;
     }
 
+    @Override
     public PaperId getPaperId() {
         return paperId;
     }

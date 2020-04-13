@@ -5,12 +5,13 @@ import java.io.Serializable;
 /**
  * @author Sławomir Dadas
  */
-public class EditProjectRequest implements Serializable {
+public class EditProjectRequest implements ProjectBaseAction {
 
     private String projectId;
 
     private String title;
 
+    @Override
     public String getProjectId() {
         return projectId;
     }

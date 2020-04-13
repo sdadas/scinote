@@ -11,6 +11,8 @@ public interface CacheService {
 
     <T> void initCache(Class<T> type);
 
+    <T> Cached<T> delete(String key, Class<T> type);
+
     <T> Cached<T> get(String key, Class<T> type);
 
     <T> List<Cached<T>> get(List<String> keys, Class<T> type);

@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface ReposService {
 
+    Paper fetchReferences(Paper paper);
+
     List<Paper> papersByQuery(String query);
 
     List<Paper> papersByIds(List<PaperId> ids);

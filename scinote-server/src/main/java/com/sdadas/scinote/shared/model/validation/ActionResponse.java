@@ -1,5 +1,6 @@
 package com.sdadas.scinote.shared.model.validation;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
@@ -9,9 +10,20 @@ import java.util.List;
 /**
  * @author Sławomir Dadas
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActionResponse implements Serializable {
 
+    private Object result;
+
     private List<String> errors = new ArrayList<>();
+
+    public Object getResult() {
+        return result;
+    }
+
+    public void setResult(Object result) {
+        this.result = result;
+    }
 
     public List<String> getErrors() {
         return errors;

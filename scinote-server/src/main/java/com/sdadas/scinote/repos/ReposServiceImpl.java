@@ -1,5 +1,6 @@
 package com.sdadas.scinote.repos;
 
+import com.sdadas.scinote.repos.academic.AcademicRepoClient;
 import com.sdadas.scinote.repos.parse.PaperParserService;
 import com.sdadas.scinote.repos.parse.model.ParseRequest;
 import com.sdadas.scinote.repos.parse.model.ParseResponse;
@@ -27,6 +28,8 @@ public class ReposServiceImpl implements ReposService {
 
     private final List<RepoClient> repos;
 
+    private final AcademicRepoClient academicClient;
+
     private final PaperParserService parser;
 
     private final PaperCache cache;
@@ -36,6 +39,17 @@ public class ReposServiceImpl implements ReposService {
         this.repos = repos;
         this.parser = parser;
         this.cache = cache;
+        this.academicClient = repos.stream()
+                .filter(val -> val instanceof AcademicRepoClient)
+                .map(val -> (AcademicRepoClient) val)
+                .findAny().orElseThrow();
+    }
+
+    @Override
+    public Paper fetchReferences(Paper paper) {
+        this.academicClient.fetchReferences(paper);
+        cache.savePaper(paper);
+        return paper;
     }
 
     @Override

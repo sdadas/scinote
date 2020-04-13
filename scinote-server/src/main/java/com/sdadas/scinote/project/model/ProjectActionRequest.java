@@ -5,12 +5,13 @@ import java.io.Serializable;
 /**
  * @author Sławomir Dadas
  */
-public class ProjectActionRequest implements Serializable {
+public class ProjectActionRequest implements ProjectBaseAction {
 
     private String projectId;
 
     private ProjectAction action;
 
+    @Override
     public String getProjectId() {
         return projectId;
     }

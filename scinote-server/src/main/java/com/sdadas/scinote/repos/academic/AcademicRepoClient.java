@@ -52,10 +52,13 @@ public class AcademicRepoClient implements RepoClient {
         return papers.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    public void fetchReverseReferences(AcademicPaper paper) throws IOException {
-        if(paper.getCitations() == null || paper.getCitations() == 0) return;
-        if(paper.getReverseReferences() != null) return;
-        PaperId paperId = paper.getIdOfType(repoId());
+    public void fetchReferences(Paper paper) {
+        boolean isAcademicPaper = paper instanceof AcademicPaper;
+        if(!isAcademicPaper) return;
+        AcademicPaper ap = (AcademicPaper) paper;
+        if(ap.getCitations() == null || ap.getCitations() == 0) return;
+        if(ap.getReverseReferences() != null) return;
+        PaperId paperId = ap.getIdOfType(repoId());
         String query = String.format("RId=%s", paperId.getId());
         EvaluateRequest request = new EvaluateRequest();
         request.setExpr(query);
@@ -71,7 +74,7 @@ public class AcademicRepoClient implements RepoClient {
         } else {
             results = new ArrayList<>();
         }
-        paper.setReverseReferences(results);
+        ap.setReverseReferences(results);
     }
 
     private List<Paper> query(String query, int size) throws IOException {

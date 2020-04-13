@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
 import com.sdadas.scinote.cache.CacheService;
 import com.sdadas.scinote.cache.model.Cached;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,21 @@ public class H2CacheService implements CacheService {
     }
 
     @Override
+    public <T> Cached<T> delete(String key, Class<T> type) {
+        if(StringUtils.isBlank(key)) return null;
+        Cached<T> cached = get(key, type);
+        if(cached == null) return null;
+        transaction(() -> {
+            H2Cache<T> cache = cache(type);
+            Map<String, Object> params = Collections.singletonMap("id", key);
+            template.update(cache.deleteOne(), params);
+        });
+        return cached;
+    }
+
+    @Override
     public <T> Cached<T> get(String key, Class<T> type) {
+        if(StringUtils.isBlank(key)) return null;
         H2Cache<T> cache = cache(type);
         Map<String, Object> params = Collections.singletonMap("id", key);
         List<CachedValue> values = template.query(cache.selectOne(), params, cache.rowMapper);
@@ -62,6 +77,7 @@ public class H2CacheService implements CacheService {
 
     @Override
     public <T> List<Cached<T>> get(List<String> keys, Class<T> type) {
+        if(keys == null) return null;
         H2Cache<T> cache = cache(type);
         Map<String, Object> params = Collections.singletonMap("ids", keys);
         List<CachedValue> values = template.query(cache.selectMany(), params, cache.rowMapper);

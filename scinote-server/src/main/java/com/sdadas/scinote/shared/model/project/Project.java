@@ -1,25 +1,21 @@
 package com.sdadas.scinote.shared.model.project;
 
+import com.sdadas.scinote.shared.Named;
 import com.sdadas.scinote.shared.model.paper.Paper;
 import com.sdadas.scinote.shared.model.paper.PaperId;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Sławomir Dadas
  */
-public class Project implements Serializable {
+public class Project implements Serializable, Named {
 
     private String id;
 
     private String title;
-
-    private Set<String> tags = new LinkedHashSet<>();
 
     private Set<ProjectPaper> accepted = new LinkedHashSet<>();
 
@@ -43,14 +39,6 @@ public class Project implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public Set<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<String> tags) {
-        this.tags = tags;
     }
 
     public Set<ProjectPaper> getAccepted() {
@@ -85,8 +73,15 @@ public class Project implements Serializable {
         this.suggestions = suggestions;
     }
 
-    public void accept(Paper paper) {
-        PaperId paperId = paper.firstPaperId();
+    public ProjectPaper paper(PaperId paperId) {
+        for (Set<ProjectPaper> set : Arrays.asList(accepted, rejected, readLater)) {
+            Optional<ProjectPaper> result = set.stream().filter(val -> val.getId().equals(paperId)).findAny();
+            if(result.isPresent()) return result.get();
+        }
+        return null;
+    }
+
+    public void accept(Paper paper, PaperId paperId) {
         ProjectPaper pp = new ProjectPaper(paperId);
         pp = ObjectUtils.firstNonNull(remove(pp, rejected, readLater), pp);
         boolean exists = accepted.contains(pp);
@@ -96,8 +91,7 @@ public class Project implements Serializable {
         }
     }
 
-    public void reject(Paper paper) {
-        PaperId paperId = paper.firstPaperId();
+    public void reject(Paper paper, PaperId paperId) {
         ProjectPaper pp = new ProjectPaper(paperId);
         ProjectPaper removed = remove(pp, accepted);
         pp = ObjectUtils.firstNonNull(removed, remove(pp, readLater), pp);
@@ -111,8 +105,7 @@ public class Project implements Serializable {
         }
     }
 
-    public void readLater(Paper paper) {
-        PaperId paperId = paper.firstPaperId();
+    public void readLater(Paper paper, PaperId paperId) {
         ProjectPaper pp = new ProjectPaper(paperId);
         ProjectPaper removed = remove(pp, accepted);
         pp = ObjectUtils.firstNonNull(removed, remove(pp, rejected), pp);
@@ -151,5 +144,10 @@ public class Project implements Serializable {
             }
         }
         return results;
+    }
+
+    @Override
+    public String name() {
+        return title;
     }
 }
