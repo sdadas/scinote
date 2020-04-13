@@ -1,25 +1,69 @@
 @import 'antd/dist/antd.css';
 
 body {
-    margin-top: 60px;
+    background-color: rgb(240, 242, 245);
 }
 
 #app {
+    height: 100%;
+}
+
+.app-layout {
     width: 100%;
+    height: 100%;
     display: flex;
-    flex-direction: column;
-    justify-content: start;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
 }
 
+.content-section {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 5;
+    justify-content: start;
+    width: 100%;
+    max-width: 1600px;
+    height: 100%;
+    background: rgb(250, 250, 250);
+}
+
+.search-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: start;
+    width: 100%;
+    max-width: 1600px;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    background-color: rgb(240, 242, 245);
+    height: 10em;
+}
+
+.projects-section {
+    padding: 1em;
+    padding-top: 10em;
+    width: 300px;
+    height: 100%;
+    background-color: rgb(240, 242, 245);
+}
+
+.content-panel {
+    padding: 1em;
+    min-width: 400px;
+    width: 100%;
+}
+
 .search-title {
-    font-size: 3em;
-    color: #557380;
-    margin-bottom: 0.3em;
+    font-size: 2.5em;
+    font-weight: lighter;
+    margin-bottom: 0.1em;
 }
 
 .search-input {
-    width: 80%;
+    width: 100%;
+    max-width: 800px;
     margin-bottom: 30px;
 }
 
@@ -37,15 +81,7 @@ body {
     font-size: 1.1em;
 }
 
-.search-panel {
-    display: flex;
-    background: #fff;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 800px;
-}
+
 
 .results-panel {
     width: 100%;

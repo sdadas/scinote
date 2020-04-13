@@ -41,3 +41,9 @@ export interface WebLocation {
     name: string;
     url: string;
 }
+
+export interface ProjectInfo {
+    id: string;
+    title: string;
+    updated: string;
+}
