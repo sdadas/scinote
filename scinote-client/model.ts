@@ -47,3 +47,27 @@ export interface ProjectInfo {
     title: string;
     updated: string;
 }
+
+export interface Project {
+    id: string;
+    title: string;
+    accepted: ProjectPaper[];
+    rejected: ProjectPaper[];
+    readLater: ProjectPaper[];
+}
+
+export interface ProjectPaper {
+    id: PaperId;
+    notes?: string;
+    tags: string[];
+}
+
+export interface ActionResponse {
+    errors: string[];
+    result?: any;
+}
+
+export interface ProjectActionRequest {
+    projectId: string;
+    action: "CREATE" | "DELETE";
+}

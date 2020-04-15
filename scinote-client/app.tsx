@@ -7,7 +7,8 @@ import {Paper} from "./model";
 import {SearchProps} from "antd/lib/input/Search";
 import {PaperCard} from "./component/paper";
 import {UploadProps} from "antd/lib/upload/Upload";
-import {ProjectsView} from "./view/projects/projects";
+import ProjectsView from "./view/projects/projects";
+import {ProjectView} from "./view/project/project";
 const { Search } = Input;
 
 interface ApplicationState {
@@ -101,6 +102,7 @@ export class Application extends React.Component<any, ApplicationState> {
                         <div className="content-panel">
                             <Switch>
                                 <Route exact path="/" component={HomeView}  />
+                                <Route path="/project/:id"  render={(props) => <ProjectView {...props.match.params} />}/>
                             </Switch>
                         </div>
                     </section>

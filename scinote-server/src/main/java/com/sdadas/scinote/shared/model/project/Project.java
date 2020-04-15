@@ -1,5 +1,7 @@
 package com.sdadas.scinote.shared.model.project;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sdadas.scinote.shared.Named;
 import com.sdadas.scinote.shared.model.paper.Paper;
 import com.sdadas.scinote.shared.model.paper.PaperId;
@@ -11,6 +13,7 @@ import java.util.*;
 /**
  * @author Sławomir Dadas
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Project implements Serializable, Named {
 
     private String id;

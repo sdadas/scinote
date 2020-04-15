@@ -1,4 +1,4 @@
-import {Paper} from "../model";
+import {ActionResponse, Paper, ProjectActionRequest, ProjectInfo} from "../model";
 
 class APIService {
 
@@ -24,6 +24,16 @@ class APIService {
 
     public parseUrl(): string {
         return `${this.baseURL}/parse`;
+    }
+
+    public projectList(): Promise<ProjectInfo[]> {
+        return fetch(`${this.baseURL}/project/list`).then((res) => res.json());
+    }
+
+    public projectAction(request: ProjectActionRequest): Promise<ActionResponse> {
+        const headers = new Headers({'Content-Type': 'application/json'});
+        const init: RequestInit = {method: "POST", body: JSON.stringify(request), headers: headers};
+        return fetch(`${this.baseURL}/project/action`, init).then((res) => res.json());
     }
 }
 

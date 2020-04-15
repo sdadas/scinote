@@ -1,28 +1,72 @@
 import * as React from "react";
-import {Button} from 'antd';
-import {ProjectInfo} from "../../model";
-import {ProjectCard} from "./card";
+import {Button, Skeleton, Radio, message} from 'antd';
+import {ProjectActionRequest, ProjectInfo} from "../../model";
+import {api} from "../../service/api";
+import {withRouter} from "react-router-dom";
 
-export class ProjectsView extends React.Component<any, any> {
+interface ProjectsViewState {
+    projects?: ProjectInfo[];
+}
+
+class ProjectsView extends React.Component<any, ProjectsViewState> {
 
     constructor(props: Readonly<any>) {
         super(props);
-        this.state = {};
+        this.state = {projects: null};
+    }
+
+    componentDidMount(): void {
+        this.fetchProjects();
+    }
+
+    private fetchProjects(): void {
+        api.projectList()
+            .then(res => this.setState({...this.state, projects: res}))
+            .catch(err => message.error(err));
+    }
+
+    private createProject(): void {
+        const projectId: string = Math.random().toString(19).slice(2);
+        const request: ProjectActionRequest = {projectId: projectId, action: "CREATE"};
+        api.projectAction(request).then(res => {
+            if(res.errors.length === 0) {
+                this.fetchProjects();
+            } else {
+                message.error(res.errors.join("\n"));
+            }
+        }).catch(err => message.error(err));
+    }
+
+    private createProjectButton(): React.ReactElement {
+        const style = {marginTop: "1em", width: "100%"}
+        return (
+            <Button type="primary" ghost shape="round" size="large" style={style} onClick={() => this.createProject()}>
+                Create new project
+            </Button>
+        )
+    }
+
+    private projectList(projects: ProjectInfo[]): React.ReactElement {
+        const options = projects.map(val => (
+            <Radio.Button value={val.id} className="project-button" key={val.id}>
+                <strong>{val.title}</strong><br/>
+                <span>{val.id}</span>
+            </Radio.Button>
+        ));
+        return <Radio.Group style={{width: "100%"}} buttonStyle="solid" onChange={e => this.openProject(e)}>{options}</Radio.Group>;
+    }
+
+    private openProject(e) {
+        this.props.history.push(`/project/${e.target.value}`);
     }
 
     render(): React.ReactElement {
-        const projects: ProjectInfo[] = [
-            {id: "first", title: "First project", updated: "2020-02-01T13:52"},
-            {id: "second", title: "Second project", updated: "2020-02-01T13:52"}
-        ];
-        const cards = projects.map(val => <ProjectCard project={val} />);
-        return (
-            <div>
-                {cards}
-                <Button type="primary" ghost shape="round" size="large" style={{marginTop: "1em", width: "100%"}}>
-                    Create new project
-                </Button>
-            </div>
-        )
+        const projects = this.state.projects;
+        if(projects == null) {
+            return <Skeleton active />
+        }
+        return <div>{this.projectList(projects)}{this.createProjectButton()}</div>;
     }
 }
+
+export default withRouter(ProjectsView);

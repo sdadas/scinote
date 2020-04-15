@@ -4,6 +4,14 @@ body {
     background-color: rgb(240, 242, 245);
 }
 
+h1, h2, h3, h4, h5, h6 {font-weight: lighter;margin-bottom: 0.2em;}
+h1 {font-size: 2.5em;}
+h2 {font-size: 2em;}
+h3 {font-size: 1.8em;}
+h4 {font-size: 1.5em;}
+h5 {font-size: 1.3em;}
+h6 {font-size: 1em;}
+
 #app {
     height: 100%;
 }
@@ -23,9 +31,9 @@ body {
     flex-grow: 5;
     justify-content: start;
     width: 100%;
-    max-width: 1600px;
+    max-width: 1000px;
     height: 100%;
-    background: rgb(250, 250, 250);
+    background: #fafafa;
 }
 
 .search-panel {
@@ -34,7 +42,7 @@ body {
     justify-content: left;
     align-items: start;
     width: 100%;
-    max-width: 1600px;
+    max-width: 1000px;
     padding-left: 0.5em;
     padding-right: 0.5em;
     background-color: rgb(240, 242, 245);
@@ -50,7 +58,7 @@ body {
 }
 
 .content-panel {
-    padding: 1em;
+    padding: 1em 2em;
     min-width: 400px;
     width: 100%;
 }
@@ -81,8 +89,6 @@ body {
     font-size: 1.1em;
 }
 
-
-
 .results-panel {
     width: 100%;
 }
@@ -103,4 +109,29 @@ body {
 .paper-links {
     margin-top: 0.2em;
     float: right;
+}
+
+.project-button {
+    display: block;
+    width: 100%;
+    height: 4em;
+    line-height: inherit;
+    border: none;
+    padding: 5px 30px;
+}
+
+.project-button.ant-radio-button-wrapper {
+    background: #fafafa;
+}
+
+.project-button.ant-radio-button-wrapper.ant-radio-button-wrapper-checked,
+.project-button.ant-radio-button-wrapper.ant-radio-button-wrapper-checked:hover {
+    background: #b9b9b9;
+    border: none;
+    box-shadow: none;
+}
+
+.ant-skeleton {
+    background: #fafafa;
+    padding: 1em;
 }
