@@ -1,4 +1,4 @@
-import {ActionResponse, Paper, ProjectActionRequest, ProjectInfo} from "../model";
+import {ActionResponse, Paper, Project, ProjectActionRequest, ProjectInfo} from "../model";
 
 class APIService {
 
@@ -28,6 +28,10 @@ class APIService {
 
     public projectList(): Promise<ProjectInfo[]> {
         return fetch(`${this.baseURL}/project/list`).then((res) => res.json());
+    }
+
+    public projectDetails(projectId: string): Promise<Project> {
+        return fetch(`${this.baseURL}/project/${projectId}`).then((res) => res.json());
     }
 
     public projectAction(request: ProjectActionRequest): Promise<ActionResponse> {

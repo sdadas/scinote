@@ -1,6 +1,8 @@
 package com.sdadas.scinote.shared.model.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.sdadas.scinote.shared.model.paper.PaperId;
+import com.sdadas.scinote.shared.model.paper.PaperIdDeserializer;
 
 import java.io.Serializable;
 import java.util.*;
@@ -13,6 +15,7 @@ public class Candidates implements Serializable {
 
     private Set<PaperId> singles = new HashSet<>();
 
+    @JsonDeserialize(keyUsing = PaperIdDeserializer.class)
     private Map<PaperId, Integer> multiples = new HashMap<>();
 
     public Set<PaperId> getSingles() {

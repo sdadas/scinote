@@ -3,6 +3,7 @@ import {Button, Skeleton, Radio, message} from 'antd';
 import {ProjectActionRequest, ProjectInfo} from "../../model";
 import {api} from "../../service/api";
 import {withRouter} from "react-router-dom";
+import {AppUtils} from "../../utils";
 
 interface ProjectsViewState {
     projects?: ProjectInfo[];
@@ -49,8 +50,8 @@ class ProjectsView extends React.Component<any, ProjectsViewState> {
     private projectList(projects: ProjectInfo[]): React.ReactElement {
         const options = projects.map(val => (
             <Radio.Button value={val.id} className="project-button" key={val.id}>
-                <strong>{val.title}</strong><br/>
-                <span>{val.id}</span>
+                <strong style={{fontSize: "larger"}}>{val.title}</strong><br/>
+                <span style={{fontSize: "smaller"}}>Updated: {AppUtils.formatTimestamp(val.updated)}</span>
             </Radio.Button>
         ));
         return <Radio.Group style={{width: "100%"}} buttonStyle="solid" onChange={e => this.openProject(e)}>{options}</Radio.Group>;

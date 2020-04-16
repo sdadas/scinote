@@ -46,7 +46,7 @@ public class PaperId implements Serializable {
 
     @Override
     public String toString() {
-        return "(" + repo + "," + id + ")";
+        return repo + "," + id;
     }
 
     @Override

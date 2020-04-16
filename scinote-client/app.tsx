@@ -1,87 +1,29 @@
 import * as React from "react";
 import {Button, Input, Layout, message, Upload} from 'antd';
 import {Route, Switch, HashRouter} from "react-router-dom";
-import {HomeView} from "./view/home/home";
+import {HomeView} from "./component/home/home";
 import {api} from "./service/api";
-import {Paper} from "./model";
+import {Paper, SearchResult} from "./model";
 import {SearchProps} from "antd/lib/input/Search";
 import {PaperCard} from "./component/paper";
 import {UploadProps} from "antd/lib/upload/Upload";
-import ProjectsView from "./view/projects/projects";
-import {ProjectView} from "./view/project/project";
-const { Search } = Input;
+import ProjectsView from "./component/projects/projects";
+import {ProjectView} from "./component/project/project";
+import {SearchPanel} from "./component/search/search";
 
 interface ApplicationState {
-    papers: Paper[];
-    search: string;
+    searchResult?: SearchResult;
 }
 
 export class Application extends React.Component<any, ApplicationState> {
 
     constructor(props: Readonly<any>) {
         super(props);
-        this.state = {papers: [], search: ""};
+        this.state = {searchResult: null};
     }
 
-    private search(query: string, event: any): void {
-        if(!query.trim()) return;
-        api.search(query)
-            .then(val => this.addResults(val))
-            .catch(err => console.log(err));
-    }
-
-    private addResults(results: Paper[]) {
-        const papers = this.state.papers.concat(results);
-        this.setState({...this.state, papers: papers, search: ""});
-    }
-
-    private searchInput(): React.ReactElement {
-        const ph = "Enter article title, doi, url etc.";
-        const props: SearchProps = {
-            value: this.state.search,
-            placeholder: ph,
-            size: "large",
-            onChange: val => this.setState({...this.state, search: val.target.value}),
-            onSearch: (val, event) => this.search(val, event)
-        };
-        return <Search {...props} />
-    }
-
-    private results(): React.ReactElement {
-        const cards = [...this.state.papers].reverse().map((val, idx) => <PaperCard paper={val} key={idx.toString()} />);
-        return (
-            <div className="results-panel">
-                {cards}
-            </div>
-        )
-    }
-
-    private uploadInput(): React.ReactElement {
-        const props: UploadProps = {
-            name: "file",
-            action: api.parseUrl(),
-            showUploadList: false,
-            onChange: (info) => {
-                if (info.file.status === 'done') {
-                    const response: any = info.file.response;
-                    if(response.error) {
-                        message.error(response.error);
-                    } else {
-                        this.addResults([response.paper]);
-                        message.success(`${info.file.name} file uploaded successfully`);
-                    }
-                } else if (info.file.status === 'error') {
-                    message.error(`${info.file.name} file upload failed.`);
-                }
-            }
-        };
-        return (
-            <span className="search-upload">or&nbsp;
-                <Upload {...props}>
-                    <Button type="link">upload article</Button>
-                </Upload>
-            </span>
-        )
+    private searchEvent(result: SearchResult) {
+        this.setState({...this.state, searchResult: result});
     }
 
     render(): React.ReactElement {
@@ -92,17 +34,13 @@ export class Application extends React.Component<any, ApplicationState> {
                         <ProjectsView />
                     </section>
                     <section className="content-section">
-                        <div className="search-panel">
-                            <h1 className="search-title">scinote</h1>
-                            <div className="search-input">
-                                {this.searchInput()}
-                                {this.uploadInput()}
-                            </div>
-                        </div>
+                        <SearchPanel searchEvent={(res) => this.searchEvent(res)} />
                         <div className="content-panel">
                             <Switch>
                                 <Route exact path="/" component={HomeView}  />
-                                <Route path="/project/:id"  render={(props) => <ProjectView {...props.match.params} />}/>
+                                <Route path="/project/:id"  render={(props) => {
+                                    return <ProjectView {...props.match.params} searchResult={this.state.searchResult} />
+                                }}/>
                             </Switch>
                         </div>
                     </section>

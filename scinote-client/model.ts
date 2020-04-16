@@ -71,3 +71,8 @@ export interface ProjectActionRequest {
     projectId: string;
     action: "CREATE" | "DELETE";
 }
+
+export interface SearchResult {
+    paper: Paper;
+    timestamp: number;
+}

@@ -73,6 +73,7 @@ class CachedValue implements Serializable {
         Cached<T> res = new Cached<>();
         res.setKey(key);
         res.setName(name);
+        res.setUpdated(updated);
 
         if(value != null) {
             try {

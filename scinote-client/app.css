@@ -50,7 +50,7 @@ h6 {font-size: 1em;}
 }
 
 .projects-section {
-    padding: 1em;
+    padding: 0.5em;
     padding-top: 10em;
     width: 300px;
     height: 100%;
@@ -61,6 +61,7 @@ h6 {font-size: 1em;}
     padding: 1em 2em;
     min-width: 400px;
     width: 100%;
+    height: 100%;
 }
 
 .search-title {
@@ -71,7 +72,7 @@ h6 {font-size: 1em;}
 
 .search-input {
     width: 100%;
-    max-width: 800px;
+    max-width: 1000px;
     margin-bottom: 30px;
 }
 
@@ -111,6 +112,14 @@ h6 {font-size: 1em;}
     float: right;
 }
 
+.loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
 .project-button {
     display: block;
     width: 100%;
@@ -129,6 +138,34 @@ h6 {font-size: 1em;}
     background: #b9b9b9;
     border: none;
     box-shadow: none;
+}
+
+.project-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    width: 100%;
+    height: 100%;
+}
+
+.project-tabs-panel {
+    margin-top: 2em;
+}
+
+.project-tabs-panel .ant-radio-group .ant-radio-button-wrapper {
+    width: 120px;
+    text-align: center;
+}
+
+.project-papers-panel {
+    margin-top: 1em;
+    background: #fff;
+    height: 100%;
+    border: 1px solid #d9d9d9;
+}
+
+.project-header {
+
 }
 
 .ant-skeleton {
