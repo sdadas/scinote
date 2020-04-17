@@ -78,6 +78,11 @@ export interface PaperActionRequest {
     action: "ACCEPT" | "REJECT" | "READ_LATER";
 }
 
+export interface EditProjectRequest {
+    projectId: string;
+    title: string;
+}
+
 export interface UIAction {
     type: "SEARCH" | "PROJECT_CHANGED"
     timestamp?: number;

@@ -12,19 +12,29 @@ interface ProjectsViewProps {
 
 interface ProjectsViewState {
     projects?: ProjectInfo[];
+    currentProject?: string;
 }
 
 class ProjectsView extends React.Component<ProjectsViewProps, ProjectsViewState> {
 
     constructor(props: Readonly<ProjectsViewProps>) {
         super(props);
-        this.state = {projects: null};
+        this.state = {projects: null, currentProject: this.currentProjectFromPath(props)};
+    }
+
+    private currentProjectFromPath(props: any): string {
+        const path = props.location.pathname;
+        const regex = /\/project\/(\w+)/i;
+        const match = path.match(regex);
+        if(match) {
+            return match[1];
+        }
+        return null;
     }
 
     componentDidMount(): void {
         this.fetchProjects();
     }
-
 
     componentDidUpdate(prevProps: Readonly<ProjectsViewProps>, prevState: Readonly<ProjectsViewState>, snapshot?: any): void {
         const prevAction = prevProps.action;
@@ -70,11 +80,17 @@ class ProjectsView extends React.Component<ProjectsViewProps, ProjectsViewState>
                 <span style={{fontSize: "smaller"}}>Updated: {AppUtils.formatTimestamp(val.updated)}</span>
             </Radio.Button>
         ));
-        return <Radio.Group className="projects-list" buttonStyle="solid" onChange={e => this.openProject(e)}>{options}</Radio.Group>;
+        return (
+            <Radio.Group className="projects-list" buttonStyle="solid" onChange={e => this.openProject(e)}
+                         value={this.state.currentProject}>
+                {options}
+            </Radio.Group>
+        );
     }
 
     private openProject(e) {
         this.props.history.push(`/project/${e.target.value}`);
+        this.setState({...this.state, currentProject: e.target.value});
     }
 
     render(): React.ReactElement {

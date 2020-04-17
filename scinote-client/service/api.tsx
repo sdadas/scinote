@@ -1,4 +1,12 @@
-import {ActionResponse, Paper, PaperActionRequest, Project, ProjectActionRequest, ProjectInfo} from "../model";
+import {
+    ActionResponse,
+    EditProjectRequest,
+    Paper,
+    PaperActionRequest,
+    Project,
+    ProjectActionRequest,
+    ProjectInfo
+} from "../model";
 
 class APIService {
 
@@ -40,15 +48,21 @@ class APIService {
     }
 
     public projectAction(request: ProjectActionRequest): Promise<ActionResponse> {
-        const headers = new Headers({'Content-Type': 'application/json'});
-        const init: RequestInit = {method: "POST", body: JSON.stringify(request), headers: headers};
-        return fetch(`${this.baseURL}/project/action`, init).then((res) => res.json());
+        return this.post(`${this.baseURL}/project/action`, request);
     }
 
     public paperAction(request: PaperActionRequest): Promise<ActionResponse> {
+        return this.post(`${this.baseURL}/project/paper/action`, request);
+    }
+
+    public editProject(request: EditProjectRequest): Promise<ActionResponse> {
+        return this.post(`${this.baseURL}/project/edit`, request);
+    }
+
+    private post(url: string, body: any): Promise<any> {
         const headers = new Headers({'Content-Type': 'application/json'});
-        const init: RequestInit = {method: "POST", body: JSON.stringify(request), headers: headers};
-        return fetch(`${this.baseURL}/project/paper/action`, init).then((res) => res.json());
+        const init: RequestInit = {method: "POST", body: JSON.stringify(body), headers: headers};
+        return fetch(url, init).then((res) => res.json());
     }
 }
 

@@ -1,10 +1,20 @@
 import * as React from "react";
-import {Paper, PaperActionRequest, PaperId, Project, ProjectActionRequest, ProjectPaper, UIAction} from "../../model";
+import {
+    EditProjectRequest,
+    Paper,
+    PaperActionRequest,
+    PaperId,
+    Project,
+    ProjectActionRequest,
+    ProjectPaper,
+    UIAction
+} from "../../model";
 import {Button, message, Radio, Popconfirm} from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import {api} from "../../service/api";
 import {PaperCard} from "./paper";
 import {Redirect} from "react-router-dom";
+import {Inplace} from "../utils/inplace";
 
 interface ProjectProps {
     id: string;
@@ -77,6 +87,20 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         }).catch(err => message.error(err));
     }
 
+    private editProject(title: string): void {
+        if(title.trim().length === 0 || title == this.state.project.title) return;
+        const request: EditProjectRequest = {projectId: this.props.id, title: title};
+        api.editProject(request).then(res => {
+            if(res.errors.length > 0) {
+                message.error(res.errors.join("\n"));
+            } else {
+                this.props.actionEvent({type: "PROJECT_CHANGED"} as UIAction);
+                const project: Project = this.state.project;
+                this.setState({...this.state, project: {...project, title: title}});
+            }
+        }).catch(err => message.error(err));
+    }
+
     private fetchPaperDetails(project: Project): void {
         const ids: string[] = [];
         for(const list of [project.accepted, project.rejected, project.readLater]) {
@@ -103,7 +127,9 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         const project = this.state.project;
         return (
             <div className="project-header">
-                <h1 style={{marginBottom: "0px"}}>{project.title}</h1>
+                <h1 style={{marginBottom: "0px"}}>
+                    <Inplace type="text" value={project.title} onSave={val => this.editProject(val)}  />
+                </h1>
                 <span style={{color: "#999"}}>ID: {project.id}</span>
             </div>
         )
