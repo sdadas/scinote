@@ -3,10 +3,11 @@ import {UploadProps} from "antd/lib/upload/Upload";
 import {api} from "../../service/api";
 import {Button, Input, message, Upload} from "antd";
 import {SearchProps} from "antd/lib/input/Search";
+import {UIAction} from "../../model";
 const { Search } = Input;
 
 interface SearchPanelProps {
-    searchEvent: Function;
+    actionEvent: Function;
 }
 
 interface SearchPanelState {
@@ -25,7 +26,7 @@ export class SearchPanel extends React.Component<SearchPanelProps, SearchPanelSt
         if(!query.trim()) return;
         api.search(query).then(val => {
             if(val.length > 0) {
-                this.props.searchEvent({paper: val[0], timestamp: new Date().getTime()});
+                this.props.actionEvent({payload: val[0], type: "SEARCH"} as UIAction);
             }
             this.setState({search: ""});
         }).catch(err => console.log(err));
@@ -54,7 +55,7 @@ export class SearchPanel extends React.Component<SearchPanelProps, SearchPanelSt
                     if(response.error) {
                         message.error(response.error);
                     } else {
-                        this.props.searchEvent({paper: response.paper, timestamp: new Date().getTime()});
+                        this.props.actionEvent({payload: response.paper, type: "SEARCH"} as UIAction);
                         message.success(`${info.file.name} file uploaded successfully`);
                     }
                 } else if (info.file.status === 'error') {

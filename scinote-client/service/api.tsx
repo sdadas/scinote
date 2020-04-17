@@ -1,4 +1,4 @@
-import {ActionResponse, Paper, Project, ProjectActionRequest, ProjectInfo} from "../model";
+import {ActionResponse, Paper, PaperActionRequest, Project, ProjectActionRequest, ProjectInfo} from "../model";
 
 class APIService {
 
@@ -22,6 +22,11 @@ class APIService {
         return fetch(`${this.baseURL}/search?q=${query}`).then((res) => res.json());
     }
 
+    public papers(ids: string[]): Promise<Paper[]> {
+        const query = ids.map(val => `id=${val}`).join("&");
+        return fetch(`${this.baseURL}/papers?${query}`).then((res) => res.json());
+    }
+
     public parseUrl(): string {
         return `${this.baseURL}/parse`;
     }
@@ -38,6 +43,12 @@ class APIService {
         const headers = new Headers({'Content-Type': 'application/json'});
         const init: RequestInit = {method: "POST", body: JSON.stringify(request), headers: headers};
         return fetch(`${this.baseURL}/project/action`, init).then((res) => res.json());
+    }
+
+    public paperAction(request: PaperActionRequest): Promise<ActionResponse> {
+        const headers = new Headers({'Content-Type': 'application/json'});
+        const init: RequestInit = {method: "POST", body: JSON.stringify(request), headers: headers};
+        return fetch(`${this.baseURL}/project/paper/action`, init).then((res) => res.json());
     }
 }
 

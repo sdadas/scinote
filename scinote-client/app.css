@@ -1,7 +1,7 @@
 @import 'antd/dist/antd.css';
 
 body {
-    background-color: rgb(240, 242, 245);
+    background-color: #f9fafb;
 }
 
 h1, h2, h3, h4, h5, h6 {font-weight: lighter;margin-bottom: 0.2em;}
@@ -33,7 +33,7 @@ h6 {font-size: 1em;}
     width: 100%;
     max-width: 1000px;
     height: 100%;
-    background: #fafafa;
+    background: #f9fafb;
 }
 
 .search-panel {
@@ -43,22 +43,19 @@ h6 {font-size: 1em;}
     align-items: start;
     width: 100%;
     max-width: 1000px;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    background-color: rgb(240, 242, 245);
+    background-color: #f9fafb;
     height: 10em;
 }
 
 .projects-section {
-    padding: 0.5em;
+    padding: 2em;
     padding-top: 10em;
     width: 300px;
     height: 100%;
-    background-color: rgb(240, 242, 245);
+    background-color: #f9fafb;
 }
 
 .content-panel {
-    padding: 1em 2em;
     min-width: 400px;
     width: 100%;
     height: 100%;
@@ -90,10 +87,6 @@ h6 {font-size: 1em;}
     font-size: 1.1em;
 }
 
-.results-panel {
-    width: 100%;
-}
-
 .paper-title {
     font-size: 1.4em;
     margin-bottom: 0;
@@ -101,10 +94,10 @@ h6 {font-size: 1em;}
 }
 
 .paper-card {
-    width: 100%;
     padding: 5px 20px;
-    margin-bottom: 20px;
+    margin: 10px;
     background: #f9fafb;
+    border: 1px solid #d9d9d9;
 }
 
 .paper-links {
@@ -120,6 +113,11 @@ h6 {font-size: 1em;}
     height: 100%;
 }
 
+.projects-list {
+    width: 100%;
+    border: 1px solid #d9d9d9;
+}
+
 .project-button {
     display: block;
     width: 100%;
@@ -130,7 +128,7 @@ h6 {font-size: 1em;}
 }
 
 .project-button.ant-radio-button-wrapper {
-    background: #fafafa;
+    background: #fff;
 }
 
 .project-button.ant-radio-button-wrapper.ant-radio-button-wrapper-checked,

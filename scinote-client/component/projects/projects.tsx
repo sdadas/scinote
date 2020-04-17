@@ -1,23 +1,39 @@
 import * as React from "react";
 import {Button, Skeleton, Radio, message} from 'antd';
-import {ProjectActionRequest, ProjectInfo} from "../../model";
+import {ProjectActionRequest, ProjectInfo, UIAction} from "../../model";
 import {api} from "../../service/api";
 import {withRouter} from "react-router-dom";
 import {AppUtils} from "../../utils";
+
+interface ProjectsViewProps {
+    action?: UIAction;
+    history: any;
+}
 
 interface ProjectsViewState {
     projects?: ProjectInfo[];
 }
 
-class ProjectsView extends React.Component<any, ProjectsViewState> {
+class ProjectsView extends React.Component<ProjectsViewProps, ProjectsViewState> {
 
-    constructor(props: Readonly<any>) {
+    constructor(props: Readonly<ProjectsViewProps>) {
         super(props);
         this.state = {projects: null};
     }
 
     componentDidMount(): void {
         this.fetchProjects();
+    }
+
+
+    componentDidUpdate(prevProps: Readonly<ProjectsViewProps>, prevState: Readonly<ProjectsViewState>, snapshot?: any): void {
+        const prevAction = prevProps.action;
+        const currAction = this.props.action
+        if(currAction != null && currAction.type == "PROJECT_CHANGED") {
+            if(prevAction == null || prevAction.timestamp !== currAction.timestamp) {
+                this.fetchProjects();
+            }
+        }
     }
 
     private fetchProjects(): void {
@@ -54,7 +70,7 @@ class ProjectsView extends React.Component<any, ProjectsViewState> {
                 <span style={{fontSize: "smaller"}}>Updated: {AppUtils.formatTimestamp(val.updated)}</span>
             </Radio.Button>
         ));
-        return <Radio.Group style={{width: "100%"}} buttonStyle="solid" onChange={e => this.openProject(e)}>{options}</Radio.Group>;
+        return <Radio.Group className="projects-list" buttonStyle="solid" onChange={e => this.openProject(e)}>{options}</Radio.Group>;
     }
 
     private openProject(e) {
@@ -70,4 +86,4 @@ class ProjectsView extends React.Component<any, ProjectsViewState> {
     }
 }
 
-export default withRouter(ProjectsView);
+export default withRouter(ProjectsView as any);

@@ -1,29 +1,25 @@
 import * as React from "react";
-import {Button, Input, Layout, message, Upload} from 'antd';
-import {Route, Switch, HashRouter} from "react-router-dom";
+import {HashRouter, Route, Switch} from "react-router-dom";
 import {HomeView} from "./component/home/home";
-import {api} from "./service/api";
-import {Paper, SearchResult} from "./model";
-import {SearchProps} from "antd/lib/input/Search";
-import {PaperCard} from "./component/paper";
-import {UploadProps} from "antd/lib/upload/Upload";
+import {UIAction} from "./model";
 import ProjectsView from "./component/projects/projects";
 import {ProjectView} from "./component/project/project";
 import {SearchPanel} from "./component/search/search";
 
 interface ApplicationState {
-    searchResult?: SearchResult;
+    action?: UIAction;
 }
 
 export class Application extends React.Component<any, ApplicationState> {
 
     constructor(props: Readonly<any>) {
         super(props);
-        this.state = {searchResult: null};
+        this.state = {action: null};
     }
 
-    private searchEvent(result: SearchResult) {
-        this.setState({...this.state, searchResult: result});
+    private actionEvent(result: UIAction) {
+        result.timestamp = new Date().getTime();
+        this.setState({...this.state, action: result});
     }
 
     render(): React.ReactElement {
@@ -31,15 +27,16 @@ export class Application extends React.Component<any, ApplicationState> {
             <HashRouter>
                 <div className="app-layout">
                     <section className="projects-section">
-                        <ProjectsView />
+                        <ProjectsView action={this.state.action} />
                     </section>
                     <section className="content-section">
-                        <SearchPanel searchEvent={(res) => this.searchEvent(res)} />
+                        <SearchPanel actionEvent={(res) => this.actionEvent(res)} />
                         <div className="content-panel">
                             <Switch>
                                 <Route exact path="/" component={HomeView}  />
                                 <Route path="/project/:id"  render={(props) => {
-                                    return <ProjectView {...props.match.params} searchResult={this.state.searchResult} />
+                                    return <ProjectView {...props.match.params} action={this.state.action}
+                                                        actionEvent={(res) => this.actionEvent(res)} />
                                 }}/>
                             </Switch>
                         </div>

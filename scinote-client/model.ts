@@ -72,7 +72,14 @@ export interface ProjectActionRequest {
     action: "CREATE" | "DELETE";
 }
 
-export interface SearchResult {
-    paper: Paper;
-    timestamp: number;
+export interface PaperActionRequest {
+    projectId: string;
+    paperId: PaperId;
+    action: "ACCEPT" | "REJECT" | "READ_LATER";
+}
+
+export interface UIAction {
+    type: "SEARCH" | "PROJECT_CHANGED"
+    timestamp?: number;
+    payload?: any;
 }
