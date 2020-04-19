@@ -35,8 +35,8 @@ class PaperCache {
         List<PaperId> ids = paper.getIds();
         if(paper.getUid() == null) {
             paper.setUid(RandomStringUtils.randomAlphanumeric(50));
-            cache.put(paper.getUid(), paper, Paper.class);
         }
+        cache.put(paper.getUid(), paper, Paper.class);
         for (PaperId id : ids) {
             PaperIdMapping mapping = new PaperIdMapping(id, paper.getUid());
             cache.put(id.toString(), mapping, PaperIdMapping.class);

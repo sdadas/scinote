@@ -1,8 +1,8 @@
 import * as React from "react";
-import {EditPaperRequest, Paper, ProjectPaper} from "../../model";
-import {Skeleton, Tag} from "antd";
+import {EditPaperRequest, Paper, ProjectPaper, WebLocation} from "../../model";
+import {Popover, Skeleton, Tag} from "antd";
 import {Inplace} from "../utils/inplace";
-import {FileOutlined, TagsOutlined} from '@ant-design/icons';
+import {FileOutlined, TagsOutlined, FileTextOutlined, DownCircleOutlined} from '@ant-design/icons';
 
 
 interface PaperCardProps {
@@ -105,6 +105,40 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
         )
     }
 
+    private actions(): React.ReactElement {
+        return (
+            <div className="paper-actions">
+                <Popover placement="leftTop" title="Paper links" content={() => this.links()} trigger="click">
+                    <FileTextOutlined />
+                </Popover>
+                &nbsp;
+                <DownCircleOutlined />
+            </div>
+        );
+    }
+
+    private links(): React.ReactElement {
+        const urls: WebLocation[] = this.props.paper.urls;
+        const elements = urls.map(val => {
+            return <div key={val.url}><a href={val.url} title={val.url} target="_blank">{this.abbrUrl(val.url, 40)}</a></div>
+        });
+        return <div className="paper-links">{elements}</div>;
+    }
+
+    private abbrUrl(url: string, chars: number): string {
+        if(url.startsWith("http://")) {
+            url = url.substring(7);
+        } else if(url.startsWith("https://")) {
+            url = url.substring(8);
+        }
+        if(url.length > chars) {
+            const half = (chars / 2) - 3;
+            return url.substr(0, half) + "[...]" + url.substr(url.length - half);
+        } else {
+            return url;
+        }
+    }
+
     render(): React.ReactElement {
         const paper = this.props.paper;
         if(!paper) return <Skeleton active />
@@ -112,6 +146,7 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
             <div className="paper-card">
                 <div className="paper-card-title">
                     {this.title()}
+                    {this.actions()}
                 </div>
                 {this.authors()}
                 {this.source()}

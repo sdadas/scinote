@@ -102,9 +102,21 @@ h6 {font-size: 1em;}
     border: 1px solid #d9d9d9;
 }
 
-.paper-links {
-    margin-top: 0.2em;
-    float: right;
+.paper-card-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.paper-actions {
+    font-size: 1.3em;
+    white-space: pre;
+    color: #aaa;
+}
+
+.paper-actions .anticon:hover {
+    color: rgb(24, 144, 255);
 }
 
 .loading {
