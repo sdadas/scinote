@@ -76,7 +76,7 @@ class ProjectsView extends React.Component<ProjectsViewProps, ProjectsViewState>
     private projectList(projects: ProjectInfo[]): React.ReactElement {
         const options = projects.map(val => (
             <Radio.Button value={val.id} className="project-button" key={val.id}>
-                <strong style={{fontSize: "larger"}}>{val.title}</strong><br/>
+                <strong style={{fontSize: "larger"}}>{AppUtils.abbr(val.title, 20)}</strong><br/>
                 <span style={{fontSize: "smaller"}}>Updated: {AppUtils.formatTimestamp(val.updated)}</span>
             </Radio.Button>
         ));

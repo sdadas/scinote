@@ -2,7 +2,7 @@ import * as React from "react";
 import {EditPaperRequest, Paper, ProjectPaper, WebLocation} from "../../model";
 import {Popover, Skeleton, Tag} from "antd";
 import {Inplace} from "../utils/inplace";
-import {FileOutlined, TagsOutlined, FileTextOutlined, DownCircleOutlined} from '@ant-design/icons';
+import {FileOutlined, TagsOutlined, LinkOutlined, DownCircleOutlined} from '@ant-design/icons';
 
 
 interface PaperCardProps {
@@ -46,11 +46,12 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
 
     private title(): React.ReactElement {
         const urls = this.props.paper.urls;
+        const title = this.props.paper.title || "(Untitled)";
         if(urls && urls.length) {
             const url = urls[0];
-            return <a className="paper-title" href={url.url} target="_blank">{this.props.paper.title}</a>
+            return <a className="paper-title" href={url.url} target="_blank">{title}</a>
         } else {
-            return <span className="paper-title">{this.props.paper.title}</span>
+            return <span className="paper-title">{title}</span>
         }
     }
 
@@ -106,11 +107,14 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
     }
 
     private actions(): React.ReactElement {
+        const urls: WebLocation[] = this.props.paper.urls;
+        let links = null;
+        if(urls && urls.length > 0) {
+            links = <Popover placement="leftTop" title="Paper links" content={() => this.links()} trigger="click"><LinkOutlined /></Popover>;
+        }
         return (
             <div className="paper-actions">
-                <Popover placement="leftTop" title="Paper links" content={() => this.links()} trigger="click">
-                    <FileTextOutlined />
-                </Popover>
+                {links}
                 &nbsp;
                 <DownCircleOutlined />
             </div>

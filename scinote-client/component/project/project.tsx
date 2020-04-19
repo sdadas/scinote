@@ -160,12 +160,14 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
     }
 
     private tabs(): React.ReactElement {
+        const project = this.state.project;
+        const count = tab => project[tab] ? project[tab].length : 0;
         return (
             <div className="project-tabs-panel">
                 <Radio.Group onChange={val => this.setState({...this.state, tab: val.target.value})} value={this.state.tab}>
-                    <Radio.Button value="accepted">Accepted</Radio.Button>
-                    <Radio.Button value="rejected">Rejected</Radio.Button>
-                    <Radio.Button value="readLater">Read&nbsp;later</Radio.Button>
+                    <Radio.Button value="accepted">Accepted [{count("accepted")}]</Radio.Button>
+                    <Radio.Button value="rejected">Rejected [{count("rejected")}]</Radio.Button>
+                    <Radio.Button value="readLater">Read&nbsp;later [{count("readLater")}]</Radio.Button>
                     <Radio.Button value="suggestions">Suggestions</Radio.Button>
                 </Radio.Group>
 

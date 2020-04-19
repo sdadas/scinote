@@ -9,4 +9,13 @@ export class AppUtils {
             return value.replace("T", " ");
         }
     }
+
+    public static abbr(value: string, chars: number) {
+        if(!value) return value;
+        if(value.length > chars && chars > 3) {
+            return value.substr(0, chars - 3) + "..."
+        } else {
+            return value;
+        }
+    }
 }
