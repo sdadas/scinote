@@ -19,10 +19,10 @@ class APIService {
     private static createBaseURL(): string {
         const host = window.location.hostname;
         if (host.indexOf("localhost") >= 0) {
-            if(window.location.port == "1234") return "http://localhost:8080/";
-            return window.location.protocol + "//localhost:" + window.location.port + "/";
+            if(window.location.port == "1234") return "http://localhost:8080";
+            return window.location.protocol + "//localhost:" + window.location.port;
         } else {
-            return window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/";
+            return window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         }
     }
 
@@ -31,8 +31,7 @@ class APIService {
     }
 
     public papers(ids: string[]): Promise<Paper[]> {
-        const query = ids.map(val => `id=${val}`).join("&");
-        return fetch(`${this.baseURL}/papers?${query}`).then((res) => res.json());
+        return this.post(`${this.baseURL}/papers`, ids);
     }
 
     public parseUrl(): string {

@@ -1,5 +1,7 @@
 package com.sdadas.scinote.repos.doi;
 
+import com.google.common.io.CharStreams;
+import com.google.common.net.InternetDomainName;
 import com.sdadas.scinote.repos.doi.model.CrossRefResponse;
 import com.sdadas.scinote.repos.doi.rest.CrossRefRestClient;
 import com.sdadas.scinote.repos.shared.RepoClient;
@@ -7,13 +9,21 @@ import com.sdadas.scinote.shared.model.paper.Paper;
 import com.sdadas.scinote.shared.model.paper.PaperId;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author Sławomir Dadas
@@ -29,10 +39,25 @@ public class CrossRefRepoClient implements RepoClient {
 
     private final CrossRefTypeMapper mapper;
 
+    private final Set<String> urlBlacklist;
+
     @Autowired
     public CrossRefRepoClient() {
         this.client = new CrossRefRestClient();
         this.mapper = new CrossRefTypeMapper();
+        this.urlBlacklist = loadUrlBlacklist();
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    private Set<String> loadUrlBlacklist() {
+        Resource resource = new ClassPathResource("/lists/doi_url_blacklist.txt");
+        try(InputStream is = resource.getInputStream()) {
+            Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
+            List<String> lines = CharStreams.readLines(reader);
+            return new HashSet<>(lines);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @Override
@@ -72,10 +97,8 @@ public class CrossRefRepoClient implements RepoClient {
     private String simplify(String query) {
         String id = query;
         if(StringUtils.startsWithAny(id.toLowerCase(), "http://", "https://")) {
-            Matcher matcher = DOI_PATTERN.matcher(id);
-            if(matcher.find()) {
-                return matcher.group();
-            }
+            String doi = findDoiInUrl(id);
+            if(doi != null) return doi;
             id = StringUtils.removeStartIgnoreCase(id, "https://");
             id = StringUtils.removeStartIgnoreCase(id, "http://");
         }
@@ -90,5 +113,25 @@ public class CrossRefRepoClient implements RepoClient {
         } else {
             return null;
         }
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    private String findDoiInUrl(String url) {
+        Matcher matcher = DOI_PATTERN.matcher(url);
+        if(matcher.find()) {
+            try {
+                URI uri = new URI(url);
+                InternetDomainName domain = InternetDomainName.from(uri.getHost());
+                if(domain.isUnderRegistrySuffix()) {
+                    String domainName = domain.topDomainUnderRegistrySuffix().toString().toLowerCase();
+                    if(urlBlacklist.contains(domainName)) {
+                        return null;
+                    }
+                }
+            } catch (URISyntaxException e) {
+                return matcher.group();
+            }
+        }
+        return null;
     }
 }

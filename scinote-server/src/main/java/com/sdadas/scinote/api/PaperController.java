@@ -35,8 +35,8 @@ public class PaperController {
         return service.papersByQuery(q);
     }
 
-    @GetMapping(path = "/papers", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Paper> papers(@RequestParam List<String> id) {
+    @PostMapping(path = "/papers", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Paper> papers(@RequestBody List<String> id) {
         List<PaperId> paperIds = id.stream().map(val -> PaperId.fromString(val, ",")).collect(Collectors.toList());
         return service.papersByIds(paperIds);
     }

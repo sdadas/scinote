@@ -66,14 +66,14 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         this.setState({...this.state, papers, project});
 
         const request: PaperActionRequest = {projectId: project.id, paperId: paper.ids[0], action: "ACCEPT"};
-        api.paperAction(request).then(val => {}).catch(err => message.error(err));
+        api.paperAction(request).then(val => {}).catch(err => message.error(err.toString()));
     }
 
     private fetchProject(): void {
         api.projectDetails(this.props.id).then(res => {
             this.setState({...this.state, project: res, tab: "accepted", papers: {}});
             this.fetchPaperDetails(res);
-        }).catch(err => message.error(err));
+        }).catch(err => message.error(err.toString()));
     }
 
     private deleteProject(): void {
@@ -85,7 +85,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
                 this.props.actionEvent({type: "PROJECT_CHANGED"} as UIAction);
                 this.setState({...this.state, deleted: true});
             }
-        }).catch(err => message.error(err));
+        }).catch(err => message.error(err.toString()));
     }
 
     private editProject(title: string): void {
@@ -99,7 +99,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
                 const project: Project = this.state.project;
                 this.setState({...this.state, project: {...project, title: title}});
             }
-        }).catch(err => message.error(err));
+        }).catch(err => message.error(err.toString()));
     }
 
     private editPaper(request: EditPaperRequest) {
@@ -122,7 +122,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
                 }
                 this.setState({...this.state, project: {...project, tab: newPapers}} as any);
             }
-        }).catch(err => message.error(err));
+        }).catch(err => message.error(err.toString()));
     }
 
     private fetchPaperDetails(project: Project): void {
@@ -135,7 +135,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
             const values = {};
             res.forEach(val => values[this.paperKey(val.ids[0])] = val);
             this.setState({...this.state, papers: {...this.state.papers, ...values}});
-        }).catch(err => message.error(err));
+        }).catch(err => message.error(err.toString()));
     }
 
     private loader(): React.ReactElement {
