@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+    EditPaperRequest,
     EditProjectRequest,
     Paper,
     PaperActionRequest,
@@ -101,6 +102,29 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         }).catch(err => message.error(err));
     }
 
+    private editPaper(request: EditPaperRequest) {
+        request.projectId = this.props.id;
+        api.editPaper(request).then(res => {
+            if(res.errors.length > 0) {
+                message.error(res.errors.join("\n"));
+            } else {
+                const key = this.paperKey(request.paperId);
+                const project: Project = this.state.project;
+                const tab = this.state.tab;
+                const oldPapers: ProjectPaper[] = project[tab];
+                const newPapers: ProjectPaper[] = [];
+                for(const paper of oldPapers) {
+                    if(this.paperKey(paper.id) == key) {
+                        paper.notes = request.notes;
+                        paper.tags = request.tags;
+                    }
+                    newPapers.push(paper);
+                }
+                this.setState({...this.state, project: {...project, tab: newPapers}} as any);
+            }
+        }).catch(err => message.error(err));
+    }
+
     private fetchPaperDetails(project: Project): void {
         const ids: string[] = [];
         for(const list of [project.accepted, project.rejected, project.readLater]) {
@@ -128,7 +152,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         return (
             <div className="project-header">
                 <h1 style={{marginBottom: "0px"}}>
-                    <Inplace type="text" value={project.title} onSave={val => this.editProject(val)}  />
+                    <Inplace type="text" value={project.title} onSave={val => this.editProject(val)} onValidate={val => val.trim().length > 0} />
                 </h1>
                 <span style={{color: "#999"}}>ID: {project.id}</span>
             </div>
@@ -165,7 +189,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         const cache = this.state.papers;
         const cards = tabPapers.map(val => {
             const key = this.paperKey(val.id);
-            return <PaperCard projectPaper={val} paper={cache[key]} key={key} />
+            return <PaperCard projectPaper={val} paper={cache[key]} key={key} editEvent={req => this.editPaper(req)} />
         });
         return (
             <div className="project-papers-panel">

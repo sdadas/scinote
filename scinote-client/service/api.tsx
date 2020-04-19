@@ -1,5 +1,5 @@
 import {
-    ActionResponse,
+    ActionResponse, EditPaperRequest,
     EditProjectRequest,
     Paper,
     PaperActionRequest,
@@ -57,6 +57,10 @@ class APIService {
 
     public editProject(request: EditProjectRequest): Promise<ActionResponse> {
         return this.post(`${this.baseURL}/project/edit`, request);
+    }
+
+    public editPaper(request: EditPaperRequest): Promise<ActionResponse> {
+        return this.post(`${this.baseURL}/project/paper/edit`, request);
     }
 
     private post(url: string, body: any): Promise<any> {

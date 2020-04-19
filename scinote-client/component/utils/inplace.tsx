@@ -18,13 +18,13 @@ export class Inplace extends React.Component<InplaceProps, any> {
 
     private onBlur() {
         const current: EasyEdit = this.ref.current;
-        current.setState({...current.state, editing: false, hover: false});
+        setTimeout(() => current.setState({...current.state, editing: false, hover: false}), 100);
     }
 
     render(): React.ReactElement {
         return (
             <EasyEdit type="text" saveButtonLabel="Save" cancelButtonLabel="Cancel" ref={this.ref}
-                      onValidate={val => val.trim().length > 0} onBlur={() => this.onBlur()} {...this.props} />
+                      onBlur={() => this.onBlur()} {...this.props} />
         )
     }
 }

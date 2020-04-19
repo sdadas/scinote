@@ -83,6 +83,13 @@ export interface EditProjectRequest {
     title: string;
 }
 
+export interface EditPaperRequest {
+    projectId?: string;
+    paperId: PaperId;
+    notes?: string;
+    tags?: string[];
+}
+
 export interface UIAction {
     type: "SEARCH" | "PROJECT_CHANGED"
     timestamp?: number;
