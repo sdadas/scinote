@@ -17,8 +17,11 @@ public class ProjectPaper implements Serializable {
 
     private List<String> tags;
 
+    private Long added;
+
     public ProjectPaper(PaperId id) {
         this.id = id;
+        this.added = System.currentTimeMillis();
     }
 
     public ProjectPaper() {
@@ -46,6 +49,14 @@ public class ProjectPaper implements Serializable {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public Long getAdded() {
+        return added;
+    }
+
+    public void setAdded(Long added) {
+        this.added = added;
     }
 
     @Override

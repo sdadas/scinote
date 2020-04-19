@@ -28,13 +28,14 @@ interface ProjectState {
     papers: Record<string, Paper>;
     tab: "accepted" | "rejected" | "readLater" | "suggestions";
     deleted?: boolean;
+    refreshed: number;
 }
 
 export class ProjectView extends React.Component<ProjectProps, ProjectState> {
 
     constructor(props: Readonly<any>) {
         super(props);
-        this.state = {project: null, papers: {}, tab: "accepted"};
+        this.state = {project: null, papers: {}, tab: "accepted", refreshed: new Date().getTime()};
     }
 
     componentDidMount(): void {
@@ -61,7 +62,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         papers[key] = paper;
         const project = {...this.state.project};
         const accepted = [...project.accepted];
-        accepted.push({id: paper.ids[0], tags: []});
+        accepted.push({id: paper.ids[0], tags: [], added: new Date().getTime()});
         project.accepted = accepted;
         this.setState({...this.state, papers, project});
 
@@ -71,7 +72,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
 
     private fetchProject(): void {
         api.projectDetails(this.props.id).then(res => {
-            this.setState({...this.state, project: res, tab: "accepted", papers: {}});
+            this.setState({...this.state, project: res, tab: "accepted", papers: {}, refreshed: new Date().getTime()});
             this.fetchPaperDetails(res);
         }).catch(err => message.error(err.toString()));
     }
@@ -187,11 +188,12 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         if(tab === "suggestions") {
             return null;
         }
-        const tabPapers: ProjectPaper[] = this.state.project[tab];
+        const tabPapers: ProjectPaper[] = [...this.state.project[tab]].sort((o1, o2) => (o2.added||0) - (o1.added||0));
         const cache = this.state.papers;
         const cards = tabPapers.map(val => {
             const key = this.paperKey(val.id);
-            return <PaperCard projectPaper={val} paper={cache[key]} key={key} editEvent={req => this.editPaper(req)} />
+            const cardKey = key + this.state.refreshed.toString();
+            return <PaperCard projectPaper={val} paper={cache[key]} key={cardKey} editEvent={req => this.editPaper(req)} />
         });
         return (
             <div className="project-papers-panel">

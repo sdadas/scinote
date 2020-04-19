@@ -60,6 +60,7 @@ export interface ProjectPaper {
     id: PaperId;
     notes?: string;
     tags: string[];
+    added: number;
 }
 
 export interface ActionResponse {

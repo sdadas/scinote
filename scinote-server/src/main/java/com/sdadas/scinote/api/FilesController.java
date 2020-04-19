@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.IOException;
 
@@ -38,11 +37,9 @@ public class FilesController {
             return ResponseEntity.badRequest().build();
         }
         Resource resource = new FileSystemResource(file);
-        MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
-        String contentType = fileTypeMap.getContentType(fileName);
         return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
 }

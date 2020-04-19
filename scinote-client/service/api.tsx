@@ -38,6 +38,10 @@ class APIService {
         return `${this.baseURL}/parse`;
     }
 
+    public fileUrl(relativeUrl: string) {
+        return `${this.baseURL}/${relativeUrl}`;
+    }
+
     public projectList(): Promise<ProjectInfo[]> {
         return fetch(`${this.baseURL}/project/list`).then((res) => res.json());
     }

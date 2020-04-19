@@ -3,6 +3,7 @@ import {EditPaperRequest, Paper, ProjectPaper, WebLocation} from "../../model";
 import {Badge, Popover, Skeleton, Tag} from "antd";
 import {Inplace} from "../utils/inplace";
 import {FileOutlined, TagsOutlined, LinkOutlined, DownCircleOutlined} from '@ant-design/icons';
+import {api} from "../../service/api";
 
 
 interface PaperCardProps {
@@ -51,7 +52,7 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
         const yearBadge = year ? <Tag className="paper-year">{year}</Tag> : null;
         if(urls && urls.length) {
             const url = urls[0];
-            return <span>{yearBadge}<a className="paper-title" href={url.url} target="_blank">{title}</a></span>
+            return <span>{yearBadge}<a className="paper-title" href={this.url(url)} target="_blank">{title}</a></span>
         } else {
             return <span className="paper-title">{yearBadge}{title}</span>
         }
@@ -126,9 +127,18 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
     private links(): React.ReactElement {
         const urls: WebLocation[] = this.props.paper.urls;
         const elements = urls.map(val => {
-            return <div key={val.url}><a href={val.url} title={val.url} target="_blank">{this.abbrUrl(val.url, 40)}</a></div>
+            return <div key={val.url}><a href={this.url(val)} title={val.url} target="_blank">{this.abbrUrl(val.url, 40)}</a></div>
         });
         return <div className="paper-links">{elements}</div>;
+    }
+
+    private url(url: WebLocation): string {
+        const lower = url.url.toLowerCase();
+        if(lower.startsWith("http://") || lower.startsWith("https://") || lower.startsWith("www")) {
+            return url.url;
+        } else {
+            return api.fileUrl(url.url);
+        }
     }
 
     private abbrUrl(url: string, chars: number): string {
