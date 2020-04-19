@@ -189,6 +189,10 @@ h6 {font-size: 1em;}
     padding: 1em;
 }
 
+.paper-year {
+    vertical-align: text-bottom;
+}
+
 .paper-tags {
     display: inline;
     padding-left: 10px;

@@ -1,6 +1,6 @@
 import * as React from "react";
 import {EditPaperRequest, Paper, ProjectPaper, WebLocation} from "../../model";
-import {Popover, Skeleton, Tag} from "antd";
+import {Badge, Popover, Skeleton, Tag} from "antd";
 import {Inplace} from "../utils/inplace";
 import {FileOutlined, TagsOutlined, LinkOutlined, DownCircleOutlined} from '@ant-design/icons';
 
@@ -47,11 +47,13 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
     private title(): React.ReactElement {
         const urls = this.props.paper.urls;
         const title = this.props.paper.title || "(Untitled)";
+        const year = this.props.paper.year;
+        const yearBadge = year ? <Tag className="paper-year">{year}</Tag> : null;
         if(urls && urls.length) {
             const url = urls[0];
-            return <a className="paper-title" href={url.url} target="_blank">{title}</a>
+            return <span>{yearBadge}<a className="paper-title" href={url.url} target="_blank">{title}</a></span>
         } else {
-            return <span className="paper-title">{title}</span>
+            return <span className="paper-title">{yearBadge}{title}</span>
         }
     }
 
