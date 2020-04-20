@@ -184,6 +184,27 @@ h6 {font-size: 1em;}
     border: 1px solid #d9d9d9;
 }
 
+.project-filters {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 10px;
+}
+
+.project-filters-search {
+    width: 300px;
+}
+
+.project-filters-tags {
+    width: 100%;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.project-filters-sort {
+    width: 150px;
+}
+
 .ant-skeleton {
     background: #fafafa;
     padding: 1em;

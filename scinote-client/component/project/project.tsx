@@ -16,6 +16,9 @@ import {api} from "../../service/api";
 import {PaperCard} from "./paper";
 import {Redirect} from "react-router-dom";
 import {Inplace} from "../utils/inplace";
+import {FilterMatcher, FiltersComponent, FiltersObject} from "./filters";
+import {AppUtils} from "../../utils";
+import {match} from "assert";
 
 interface ProjectProps {
     id: string;
@@ -29,13 +32,18 @@ interface ProjectState {
     tab: "accepted" | "rejected" | "readLater" | "suggestions";
     deleted?: boolean;
     refreshed: number;
+    filters: FiltersObject;
 }
 
 export class ProjectView extends React.Component<ProjectProps, ProjectState> {
 
     constructor(props: Readonly<any>) {
         super(props);
-        this.state = {project: null, papers: {}, tab: "accepted", refreshed: new Date().getTime()};
+        this.state = this.initialState();
+    }
+
+    private initialState(): ProjectState {
+        return {project: null, papers: {}, tab: "accepted", refreshed: new Date().getTime(), filters: {}};
     }
 
     componentDidMount(): void {
@@ -55,24 +63,45 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         }
     }
 
-    private addPaper(paper: Paper): void {
-        if(!this.state.project) return;
+    private cachePaper(paper: Paper): Record<string, Paper> {
         const key = this.paperKey(paper.ids[0]);
         const papers = {...this.state.papers}
+        this.createCachedDataForPaper(paper);
         papers[key] = paper;
+        return papers;
+    }
+
+    private createCachedDataForPaper(paper: Paper): Paper {
+        const title = paper.title || "";
+        const authors = paper.authors.map(val => `${val.firstName} ${val.lastName}`);
+        const year = paper.year ? paper.year.toString() : "";
+        const journal = paper.source.name || "";
+        const publisher = paper.source.publisher || "";
+        const text = AppUtils.removeNonAlphanumeric([title, authors, year, journal, publisher].join(" ").toLowerCase());
+        const words = text.split(" ").filter(val => val.trim().length > 0)
+        const cachedText = new Set<string>();
+        for(const word of words) {
+            cachedText.add(word);
+        }
+        paper.cachedText = cachedText;
+        return paper;
+    }
+
+    private addPaper(paper: Paper): void {
+        if(!this.state.project) return;
         const project = {...this.state.project};
+        const papers = this.cachePaper(paper);
         const accepted = [...project.accepted];
         accepted.push({id: paper.ids[0], tags: [], added: new Date().getTime()});
         project.accepted = accepted;
         this.setState({...this.state, papers, project});
-
         const request: PaperActionRequest = {projectId: project.id, paperId: paper.ids[0], action: "ACCEPT"};
         api.paperAction(request).then(val => {}).catch(err => message.error(err.toString()));
     }
 
     private fetchProject(): void {
         api.projectDetails(this.props.id).then(res => {
-            this.setState({...this.state, project: res, tab: "accepted", papers: {}, refreshed: new Date().getTime()});
+            this.setState({...this.initialState(), project: res});
             this.fetchPaperDetails(res);
         }).catch(err => message.error(err.toString()));
     }
@@ -134,9 +163,13 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         if(ids.length == 0) return;
         api.papers(ids).then(res => {
             const values = {};
-            res.forEach(val => values[this.paperKey(val.ids[0])] = val);
+            res.forEach(val => values[this.paperKey(val.ids[0])] = this.createCachedDataForPaper(val));
             this.setState({...this.state, papers: {...this.state.papers, ...values}});
         }).catch(err => message.error(err.toString()));
+    }
+
+    private onFiltersChange(filters: FiltersObject) {
+        this.setState({...this.state, filters: filters});
     }
 
     private loader(): React.ReactElement {
@@ -189,17 +222,38 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
             return null;
         }
         const tabPapers: ProjectPaper[] = [...this.state.project[tab]].sort((o1, o2) => (o2.added||0) - (o1.added||0));
+        const matcher = new FilterMatcher(this.state.filters);
         const cache = this.state.papers;
         const cards = tabPapers.map(val => {
             const key = this.paperKey(val.id);
             const cardKey = key + this.state.refreshed.toString();
-            return <PaperCard projectPaper={val} paper={cache[key]} key={cardKey} editEvent={req => this.editPaper(req)} />
+            const paper = cache[key];
+            if(matcher.matches(paper, val)) {
+                return <PaperCard projectPaper={val} paper={paper} key={cardKey} editEvent={req => this.editPaper(req)} />
+            } else {
+                return null;
+            }
         });
+        const tags = this.getAllTags();
         return (
             <div className="project-papers-panel">
+                <FiltersComponent key={this.props.id} onChange={val => this.onFiltersChange(val)} tags={tags} />
                 {cards}
             </div>
         )
+    }
+
+    private getAllTags(): string[] {
+        const tags = new Set<string>();
+        const proj = this.state.project;
+        for(const tab of [proj.accepted, proj.readLater, proj.rejected]) {
+            for(const paper of tab) {
+                if(paper.tags && paper.tags.length) {
+                    paper.tags.forEach(val => tags.add(val));
+                }
+            }
+        }
+        return Array.from(tags).sort();
     }
 
     private paperKey(paperId: PaperId): string {

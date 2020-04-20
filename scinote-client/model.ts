@@ -20,6 +20,7 @@ export interface Paper {
     pages?: string;
     doi?: string;
     keywords?: string[];
+    cachedText: Set<string>;
 }
 
 export interface Author {
