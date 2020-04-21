@@ -3,7 +3,7 @@ import {
     EditPaperRequest,
     EditProjectRequest,
     Paper,
-    PaperActionRequest,
+    PaperActionRequest, PaperDetails,
     PaperId,
     Project,
     ProjectActionRequest,
@@ -221,15 +221,17 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         if(tab === "suggestions") {
             return null;
         }
-        const tabPapers: ProjectPaper[] = [...this.state.project[tab]].sort((o1, o2) => (o2.added||0) - (o1.added||0));
-        const matcher = new FilterMatcher(this.state.filters);
         const cache = this.state.papers;
-        const cards = tabPapers.map(val => {
-            const key = this.paperKey(val.id);
-            const cardKey = key + this.state.refreshed.toString();
+        const matcher = new FilterMatcher(this.state.filters);
+        const tabPapers: PaperDetails[] = [...this.state.project[tab]].map(pp => {
+            const key = this.paperKey(pp.id);
             const paper = cache[key];
-            if(matcher.matches(paper, val)) {
-                return <PaperCard projectPaper={val} paper={paper} key={cardKey} editEvent={req => this.editPaper(req)} />
+            return {key: key, projectPaper: pp, paper: paper};
+        }).sort(matcher.sortFunction());
+        const cards = tabPapers.map(val => {
+            const cardKey = val.key + this.state.refreshed.toString();
+            if(matcher.matches(val.paper, val.projectPaper)) {
+                return <PaperCard projectPaper={val.projectPaper} paper={val.paper} key={cardKey} editEvent={req => this.editPaper(req)} />
             } else {
                 return null;
             }

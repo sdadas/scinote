@@ -64,6 +64,12 @@ export interface ProjectPaper {
     added: number;
 }
 
+export interface PaperDetails {
+    key: string;
+    paper: Paper;
+    projectPaper: ProjectPaper;
+}
+
 export interface ActionResponse {
     errors: string[];
     result?: any;
