@@ -66,6 +66,10 @@ class APIService {
         return this.post(`${this.baseURL}/project/paper/edit`, request);
     }
 
+    public projectSuggestions(projectId: string, num: number): Promise<Paper[]> {
+        return fetch(`${this.baseURL}/project/${projectId}/suggestions?num=${num}`).then((res) => res.json());
+    }
+
     private post(url: string, body: any): Promise<any> {
         const headers = new Headers({'Content-Type': 'application/json'});
         const init: RequestInit = {method: "POST", body: JSON.stringify(body), headers: headers};

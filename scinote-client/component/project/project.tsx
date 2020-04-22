@@ -10,7 +10,7 @@ import {
     ProjectPaper,
     UIAction
 } from "../../model";
-import {Button, message, Radio, Popconfirm} from "antd";
+import {Button, message, Radio, Popconfirm, Skeleton} from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import {api} from "../../service/api";
 import {PaperCard} from "./paper";
@@ -18,7 +18,6 @@ import {Redirect} from "react-router-dom";
 import {Inplace} from "../utils/inplace";
 import {FilterMatcher, FiltersComponent, FiltersObject} from "./filters";
 import {AppUtils} from "../../utils";
-import {match} from "assert";
 
 interface ProjectProps {
     id: string;
@@ -28,11 +27,17 @@ interface ProjectProps {
 
 interface ProjectState {
     project?: Project;
+    suggestions: ProjectSuggestions;
     papers: Record<string, Paper>;
     tab: "accepted" | "rejected" | "readLater" | "suggestions";
     deleted?: boolean;
     refreshed: number;
     filters: FiltersObject;
+}
+
+interface ProjectSuggestions {
+    loading: boolean;
+    papers: Paper[];
 }
 
 export class ProjectView extends React.Component<ProjectProps, ProjectState> {
@@ -43,7 +48,8 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
     }
 
     private initialState(): ProjectState {
-        return {project: null, papers: {}, tab: "accepted", refreshed: new Date().getTime(), filters: {}};
+        const suggestions = {loading: false, papers: []};
+        return {project: null, papers: {}, tab: "accepted", refreshed: new Date().getTime(), filters: {}, suggestions};
     }
 
     componentDidMount(): void {
@@ -94,9 +100,16 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         const accepted = [...project.accepted];
         accepted.push({id: paper.ids[0], tags: [], added: new Date().getTime()});
         project.accepted = accepted;
-        this.setState({...this.state, papers, project});
+        this.setState({...this.state, papers: papers, project: project});
         const request: PaperActionRequest = {projectId: project.id, paperId: paper.ids[0], action: "ACCEPT"};
-        api.paperAction(request).then(val => {}).catch(err => message.error(err.toString()));
+        api.paperAction(request).then(res => {
+            if(res.errors.length > 0) {
+                message.error(res.errors.join("\n"));
+            } else {
+                const papers = this.cachePaper(res.result);
+                this.setState({...this.state, papers: papers});
+            }
+        }).catch(err => message.error(err.toString()));
     }
 
     private fetchProject(): void {
@@ -168,6 +181,17 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         }).catch(err => message.error(err.toString()));
     }
 
+    private fetchSuggestions(): void {
+        const suggestions: ProjectSuggestions = {loading: true, papers: []};
+        this.setState({...this.state, suggestions});
+        api.projectSuggestions(this.props.id, 10).then(res => {
+            this.setState({...this.state, suggestions: {loading: false, papers: res}});
+        }).catch(err => {
+            message.error(err.toString());
+            this.setState({...this.state, suggestions: {loading: false, papers: []}});
+        });
+    }
+
     private onFiltersChange(filters: FiltersObject) {
         this.setState({...this.state, filters: filters});
     }
@@ -202,7 +226,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
                     <Radio.Button value="accepted">Accepted [{count("accepted")}]</Radio.Button>
                     <Radio.Button value="rejected">Rejected [{count("rejected")}]</Radio.Button>
                     <Radio.Button value="readLater">Read&nbsp;later [{count("readLater")}]</Radio.Button>
-                    <Radio.Button value="suggestions">Suggestions</Radio.Button>
+                    <Radio.Button value="suggestions" onClick={() => this.fetchSuggestions()}>Suggestions</Radio.Button>
                 </Radio.Group>
 
                 <div className="project-tabs-panel-actions" style={{float: "right"}}>
@@ -219,7 +243,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
     private papersPanel(): React.ReactElement {
         const tab = this.state.tab;
         if(tab === "suggestions") {
-            return null;
+            return this.suggestionsPanel();
         }
         const cache = this.state.papers;
         const matcher = new FilterMatcher(this.state.filters);
@@ -241,6 +265,25 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
             <div className="project-papers-panel">
                 <FiltersComponent key={this.props.id} onChange={val => this.onFiltersChange(val)} tags={tags} />
                 {cards}
+            </div>
+        )
+    }
+
+    private suggestionsPanel(): React.ReactElement {
+        const suggestions = this.state.suggestions;
+        if(suggestions.loading) {
+            return <div className="project-papers-panel"><Skeleton active /></div>;
+        }
+        const papers = suggestions.papers;
+        const cards = papers.map(val => {
+            const paperId = val.ids[0];
+            const projectPaper: ProjectPaper = {added: new Date().getTime(), tags: [], notes: null, id: paperId};
+            const cardKey = this.paperKey(paperId) + this.state.refreshed.toString();
+            return <PaperCard paper={val} projectPaper={projectPaper} editEvent={() => {}} key={cardKey} readonly />
+        })
+        return (
+            <div className="project-papers-panel">
+                {cards.length > 0 ? cards : <div className="project-no-suggestions">No suggestions at the moment</div>}
             </div>
         )
     }

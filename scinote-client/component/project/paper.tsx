@@ -1,6 +1,6 @@
 import * as React from "react";
 import {EditPaperRequest, Paper, ProjectPaper, WebLocation} from "../../model";
-import {Badge, Popover, Skeleton, Tag} from "antd";
+import {Popover, Skeleton, Tag} from "antd";
 import {Inplace} from "../utils/inplace";
 import {FileOutlined, TagsOutlined, LinkOutlined, DownCircleOutlined} from '@ant-design/icons';
 import {api} from "../../service/api";
@@ -10,7 +10,7 @@ interface PaperCardProps {
     projectPaper: ProjectPaper;
     paper?: Paper;
     editEvent: Function;
-
+    readonly?: boolean;
 }
 
 interface PaperCardState {
@@ -157,6 +157,7 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
 
     render(): React.ReactElement {
         const paper = this.props.paper;
+        const readonly = this.props.readonly;
         if(!paper) return <Skeleton active />
         return (
             <div className="paper-card">
@@ -166,8 +167,8 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
                 </div>
                 {this.authors()}
                 {this.source()}
-                {this.tags()}
-                {this.notes()}
+                {readonly ? null : this.tags()}
+                {readonly ? null : this.notes()}
             </div>
         )
     }

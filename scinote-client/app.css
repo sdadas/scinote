@@ -205,6 +205,12 @@ h6 {font-size: 1em;}
     width: 150px;
 }
 
+.project-no-suggestions {
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+}
+
 .ant-skeleton {
     background: #fafafa;
     padding: 1em;
@@ -262,6 +268,7 @@ h6 {font-size: 1em;}
     border: none;
 }
 
+
 .paper-edits .easy-edit-inline-wrapper {
     margin-top: 10px;
 }
@@ -278,7 +285,7 @@ h6 {font-size: 1em;}
 
 .easy-edit-wrapper:hover, .easy-edit-wrapper.easy-edit-hover-on {
     font-style: normal;
-    border: 1px solid #d9d9d9;
+    background: rgba(255,255,255,0.3);
 }
 
 .easy-edit-component-wrapper input {

@@ -52,12 +52,13 @@ public class AcademicRepoClient implements RepoClient {
         return papers.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    public void fetchReferences(Paper paper) {
-        boolean isAcademicPaper = paper instanceof AcademicPaper;
-        if(!isAcademicPaper) return;
+    public Paper fetchReferences(Paper paper) throws IOException {
+        AcademicPaper converted = convertPaperToAcademicPaper(paper);
+        if(converted == null) return paper;
+        paper = converted;
         AcademicPaper ap = (AcademicPaper) paper;
-        if(ap.getCitations() == null || ap.getCitations() == 0) return;
-        if(ap.getReverseReferences() != null) return;
+        if(ap.getCitations() == null || ap.getCitations() == 0) return paper;
+        if(ap.getReverseReferences() != null) return paper;
         PaperId paperId = ap.getIdOfType(repoId());
         String query = String.format("RId=%s", paperId.getId());
         EvaluateRequest request = new EvaluateRequest();
@@ -75,6 +76,24 @@ public class AcademicRepoClient implements RepoClient {
             results = new ArrayList<>();
         }
         ap.setReverseReferences(results);
+        return paper;
+    }
+
+    private AcademicPaper convertPaperToAcademicPaper(Paper paper) throws IOException {
+        if(paper instanceof AcademicPaper) {
+            return (AcademicPaper) paper;
+        } else {
+            String title = paper.getTitle();
+            if(StringUtils.isBlank(title)) return null;
+            List<Paper> candidates = search(title);
+            AcademicPaperMatcher matcher = new AcademicPaperMatcher(paper, candidates);
+            paper = matcher.match();
+            if(paper instanceof AcademicPaper) {
+                return (AcademicPaper) paper;
+            } else {
+                return null;
+            }
+        }
     }
 
     private List<Paper> query(String query, int size) throws IOException {

@@ -5,6 +5,7 @@ import com.sdadas.scinote.project.model.EditPaperRequest;
 import com.sdadas.scinote.project.model.EditProjectRequest;
 import com.sdadas.scinote.project.model.PaperActionRequest;
 import com.sdadas.scinote.project.model.ProjectActionRequest;
+import com.sdadas.scinote.shared.model.paper.Paper;
 import com.sdadas.scinote.shared.model.project.Project;
 import com.sdadas.scinote.shared.model.project.ProjectInfo;
 import com.sdadas.scinote.shared.model.validation.ActionResponse;
@@ -68,6 +69,11 @@ public class ProjectController {
         ActionResponse response = service.paperAction(request);
         prepareResponse(response);
         return response;
+    }
+
+    @GetMapping(path = "/project/{projectId}/suggestions", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Paper> projectSuggestions(@PathVariable String projectId, @RequestParam(defaultValue = "10") Integer num) {
+        return service.getSuggestions(projectId, num);
     }
 
     private void prepareResponse(ActionResponse response) {

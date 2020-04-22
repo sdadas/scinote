@@ -14,8 +14,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -90,7 +92,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
         if(res.hasErrors()) return res;
         switch (request.getAction()) {
-            case ACCEPT: acceptPaper(project, paper, paperId); break;
+            case ACCEPT: acceptPaper(project, paper, paperId, res); break;
             case REJECT: project.reject(paper, paperId); break;
             case READ_LATER: project.readLater(paper, paperId); break;
         }
@@ -98,9 +100,10 @@ public class ProjectServiceImpl implements ProjectService {
         return res;
     }
 
-    private void acceptPaper(Project project, Paper paper, PaperId paperId) {
+    private void acceptPaper(Project project, Paper paper, PaperId paperId, ActionResponse res) {
         Paper result = repos.fetchReferences(paper);
         project.accept(result, paperId);
+        res.setResult(result);
     }
 
     @Override
@@ -113,6 +116,15 @@ public class ProjectServiceImpl implements ProjectService {
             case DELETE: res = deleteProject(request); break;
         }
         return res;
+    }
+
+    @Override
+    public List<Paper> getSuggestions(String projectId, int num) {
+        Cached<Project> cached = cache.get(projectId, Project.class);
+        if(cached == null) return new ArrayList<>();
+        Project value = cached.getValue();
+        Set<PaperId> ids = value.getTopCandidatesRefsFirst(num);
+        return repos.papersByIds(new ArrayList<>(ids));
     }
 
     private ActionResponse createProject(ProjectActionRequest request) {

@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,8 +48,13 @@ public class ReposServiceImpl implements ReposService {
 
     @Override
     public Paper fetchReferences(Paper paper) {
-        this.academicClient.fetchReferences(paper);
-        cache.savePaper(paper);
+        try {
+            Paper result = this.academicClient.fetchReferences(paper);
+            cache.savePaper(result);
+            return result;
+        } catch (IOException e) {
+            LOG.error("Error fetching references", e);
+        }
         return paper;
     }
 

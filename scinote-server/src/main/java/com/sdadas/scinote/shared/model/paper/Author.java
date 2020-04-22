@@ -1,5 +1,7 @@
 package com.sdadas.scinote.shared.model.paper;
 
+import com.google.common.base.Joiner;
+
 import java.io.Serializable;
 
 /**
@@ -64,5 +66,10 @@ public class Author implements Serializable {
 
     public void setOrder(Integer order) {
         this.order = order;
+    }
+
+    @Override
+    public String toString() {
+        return Joiner.on(' ').skipNulls().join(firstName, lastName);
     }
 }
