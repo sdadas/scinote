@@ -122,7 +122,7 @@ public class AcademicRepoClient implements RepoClient {
     private String normalize(String text) {
         String res = Unidecode.toAscii().decode(text);
         res = StringUtils.lowerCase(res);
-        return res.replaceAll("[^\\p{IsAlphabetic}^\\p{IsDigit}]", " ").replaceAll("\\s+", " ");
+        return res.replaceAll("[^\\p{IsAlphabetic}^\\p{IsDigit}]", " ").replaceAll("\\s+", " ").strip();
     }
 
     @Override
