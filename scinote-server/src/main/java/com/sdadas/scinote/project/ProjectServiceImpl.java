@@ -93,8 +93,8 @@ public class ProjectServiceImpl implements ProjectService {
         if(res.hasErrors()) return res;
         switch (request.getAction()) {
             case ACCEPT: acceptPaper(project, paper, paperId, res); break;
-            case REJECT: project.reject(paper, paperId); break;
-            case READ_LATER: project.readLater(paper, paperId); break;
+            case REJECT: rejectPaper(project, paper, paperId, res); break;
+            case READ_LATER: readLaterPaper(project, paper, paperId, res); break;
         }
         cache.put(project.getId(), project, Project.class);
         return res;
@@ -103,6 +103,18 @@ public class ProjectServiceImpl implements ProjectService {
     private void acceptPaper(Project project, Paper paper, PaperId paperId, ActionResponse res) {
         Paper result = repos.fetchReferences(paper);
         project.accept(result, paperId);
+        res.setResult(result);
+    }
+
+    private void rejectPaper(Project project, Paper paper, PaperId paperId, ActionResponse res) {
+        Paper result = repos.fetchReferences(paper);
+        project.reject(result, paperId);
+        res.setResult(result);
+    }
+
+    private void readLaterPaper(Project project, Paper paper, PaperId paperId, ActionResponse res) {
+        Paper result = repos.fetchReferences(paper);
+        project.readLater(result, paperId);
         res.setResult(result);
     }
 

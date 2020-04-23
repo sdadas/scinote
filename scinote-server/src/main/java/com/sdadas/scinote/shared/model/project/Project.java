@@ -86,12 +86,12 @@ public class Project implements Serializable, Named {
 
     public void accept(Paper paper, PaperId paperId) {
         ProjectPaper pp = new ProjectPaper(paperId);
-        pp = ObjectUtils.firstNonNull(remove(pp, rejected, readLater), pp);
         boolean exists = accepted.contains(pp);
-        if(!exists) {
-            accepted.add(pp);
-            suggestions.addRefsFromPaper(paper, this);
-        }
+        if(exists) return;
+        pp = ObjectUtils.firstNonNull(remove(pp, rejected, readLater), pp);
+        accepted.add(pp);
+        suggestions.remove(paperId);
+        suggestions.addRefsFromPaper(paper, this);
     }
 
     public void reject(Paper paper, PaperId paperId) {

@@ -254,6 +254,30 @@ h6 {font-size: 1em;}
     background: #fff;
 }
 
+.paper-actions-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.paper-actions-menu-tabs {
+    font-size: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.paper-actions-menu-icon {
+    width: 50px;
+    height: 40px;
+}
+
+.paper-actions-menu-icon:hover {
+    color: #1890ff;
+    cursor: pointer;
+}
+
 /* EasyEdit customization */
 
 .paper-inline-edits {
@@ -267,7 +291,6 @@ h6 {font-size: 1em;}
 .paper-edits .easy-edit-wrapper:hover, .paper-edits .easy-edit-wrapper.easy-edit-hover-on {
     border: none;
 }
-
 
 .paper-edits .easy-edit-inline-wrapper {
     margin-top: 10px;

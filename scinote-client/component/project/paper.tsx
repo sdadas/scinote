@@ -1,15 +1,15 @@
 import * as React from "react";
-import {EditPaperRequest, Paper, ProjectPaper, WebLocation} from "../../model";
+import {EditPaperRequest, Paper, PaperActionRequest, ProjectPaper, WebLocation} from "../../model";
 import {Popover, Skeleton, Tag} from "antd";
 import {Inplace} from "../utils/inplace";
-import {FileOutlined, TagsOutlined, LinkOutlined, DownCircleOutlined} from '@ant-design/icons';
+import {FileOutlined, TagsOutlined, LinkOutlined, DownCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined} from '@ant-design/icons';
 import {api} from "../../service/api";
-
 
 interface PaperCardProps {
     projectPaper: ProjectPaper;
     paper?: Paper;
     editEvent: Function;
+    actionEvent: Function;
     readonly?: boolean;
 }
 
@@ -43,6 +43,11 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
             this.props.editEvent(request);
             this.setState({...this.state, tags: tags});
         }
+    }
+
+    private paperAction(action: any) {
+        const request: PaperActionRequest = {paperId: this.props.projectPaper.id, action: action, projectId: null};
+        this.props.actionEvent(request);
     }
 
     private title(): React.ReactElement {
@@ -119,9 +124,24 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
             <div className="paper-actions">
                 {links}
                 &nbsp;
-                <DownCircleOutlined />
+                <Popover placement="leftTop" title="Actions" content={() => this.actionMenu()} trigger="click">
+                    <DownCircleOutlined />
+                </Popover>
             </div>
         );
+    }
+
+    private actionMenu(): React.ReactElement {
+        return (
+            <div className="paper-actions-menu">
+                <div className="paper-actions-menu-tabs">
+                    <CheckCircleOutlined onClick={() => this.paperAction("ACCEPT")} className="paper-actions-menu-icon" title="Accept" />
+                    <CloseCircleOutlined onClick={() => this.paperAction("REJECT")}  className="paper-actions-menu-icon" title="Reject" />
+                    <QuestionCircleOutlined onClick={() => this.paperAction("READ_LATER")}  className="paper-actions-menu-icon" title="Read later" />
+                </div>
+                <a href="#" target="_blank">Export to BibTeX</a>
+            </div>
+        )
     }
 
     private links(): React.ReactElement {
@@ -158,7 +178,7 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
     render(): React.ReactElement {
         const paper = this.props.paper;
         const readonly = this.props.readonly;
-        if(!paper) return <Skeleton active />
+        if(!paper) return <div className="paper-card"><Skeleton active paragraph={{rows: 1}} /></div>;
         return (
             <div className="paper-card">
                 <div className="paper-card-title">

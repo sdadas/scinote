@@ -3,7 +3,8 @@ import {
     EditPaperRequest,
     EditProjectRequest,
     Paper,
-    PaperActionRequest, PaperDetails,
+    PaperActionRequest,
+    PaperDetails,
     PaperId,
     Project,
     ProjectActionRequest,
@@ -27,7 +28,8 @@ interface ProjectProps {
 
 interface ProjectState {
     project?: Project;
-    suggestions: ProjectSuggestions;
+    suggestionsLoading: boolean;
+    suggestions: Paper[];
     papers: Record<string, Paper>;
     tab: "accepted" | "rejected" | "readLater" | "suggestions";
     deleted?: boolean;
@@ -48,8 +50,15 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
     }
 
     private initialState(): ProjectState {
-        const suggestions = {loading: false, papers: []};
-        return {project: null, papers: {}, tab: "accepted", refreshed: new Date().getTime(), filters: {}, suggestions};
+        return {
+            project: null,
+            papers: {},
+            tab: "accepted",
+            refreshed: new Date().getTime(),
+            filters: {},
+            suggestionsLoading: false,
+            suggestions: []
+        };
     }
 
     componentDidMount(): void {
@@ -61,7 +70,9 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         const currAction = this.props.action
         if(currAction != null && currAction.type == "SEARCH") {
             if(prevAction == null || prevAction.timestamp !== currAction.timestamp) {
-                this.addPaper(currAction.payload);
+                const paper: Paper = currAction.payload;
+                const request: PaperActionRequest = {paperId: paper.ids[0], action: "ACCEPT", projectId: this.props.id};
+                this.movePaper(request, null, "accepted", paper, {});
             }
         }
         if(prevProps.id !== this.props.id) {
@@ -93,15 +104,51 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         return paper;
     }
 
-    private addPaper(paper: Paper): void {
-        if(!this.state.project) return;
+    private paperAction(request: PaperActionRequest, paper: Paper) {
+        request.projectId = this.props.id;
+        let from = this.state.tab;
+        let to;
+        switch (request.action) {
+            case "ACCEPT": to = "accepted"; break;
+            case "REJECT": to = "rejected"; break;
+            case "READ_LATER": to = "readLater"; break;
+        }
+        if(from === to) {
+            return;
+        } else if(from == "suggestions") {
+            const paperKey = this.paperKey(request.paperId);
+            const papers = (this.state.suggestions || []).filter(val => {
+                if(this.paperKey(val.ids[0]) === paperKey) {
+                    paper = val;
+                    return false;
+                } else {
+                    return true;
+                }
+            });
+            this.movePaper(request, null, to, paper, {suggestions: papers});
+        } else {
+            this.movePaper(request, from, to, paper, {});
+        }
+    }
+
+    private movePaper(request: PaperActionRequest, source: string, dest: string, paper: Paper, newState: any) {
+        if(!source && this.projectContains(request.paperId)) return;
         const project = {...this.state.project};
-        const papers = this.cachePaper(paper);
-        const accepted = [...project.accepted];
-        accepted.push({id: paper.ids[0], tags: [], added: new Date().getTime()});
-        project.accepted = accepted;
-        this.setState({...this.state, papers: papers, project: project});
-        const request: PaperActionRequest = {projectId: project.id, paperId: paper.ids[0], action: "ACCEPT"};
+        const papers = paper ? this.cachePaper(paper) : this.state.papers;
+        let projectPaper;
+        if(source) {
+            let sourcePapers = [...project[source]];
+            const [resultPaper, sourcePapersFiltered] = this.takePaperIfExists(sourcePapers, request.paperId);
+            sourcePapers = sourcePapersFiltered;
+            project[source] = sourcePapers;
+            projectPaper = resultPaper;
+        } else {
+            projectPaper = {id: request.paperId, tags: [], added: new Date().getTime()};
+        }
+        let destPapers = [...project[dest]];
+        destPapers.push(projectPaper);
+        project[dest] = destPapers;
+        this.setState({...this.state, ...newState, papers: papers, project: project});
         api.paperAction(request).then(res => {
             if(res.errors.length > 0) {
                 message.error(res.errors.join("\n"));
@@ -110,6 +157,38 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
                 this.setState({...this.state, papers: papers});
             }
         }).catch(err => message.error(err.toString()));
+    }
+
+    private projectContains(paperId: PaperId) {
+        const paperKey = this.paperKey(paperId);
+        const proj = this.state.project;
+        for(const tab of [proj.accepted, proj.readLater, proj.rejected]) {
+            for(const paper of tab) {
+                const otherKey = this.paperKey(paper.id);
+                if(paperKey === otherKey) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private takePaperIfExists(papers: ProjectPaper[], paperId: PaperId): [ProjectPaper, ProjectPaper[]] {
+        const paperKey: string = this.paperKey(paperId);
+        let found: ProjectPaper = null;
+        for(const paper of papers) {
+            if(this.paperKey(paper.id) === paperKey) {
+                found = paper;
+                break;
+            }
+        }
+        if(found) {
+            const filteredPapers = papers.filter(val => this.paperKey(val.id) !== paperKey);
+            return [found, filteredPapers];
+        } else {
+            const paper: ProjectPaper = {id: paperId, tags: [], added: new Date().getTime()};
+            return [paper, papers];
+        }
     }
 
     private fetchProject(): void {
@@ -182,13 +261,12 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
     }
 
     private fetchSuggestions(): void {
-        const suggestions: ProjectSuggestions = {loading: true, papers: []};
-        this.setState({...this.state, suggestions});
+        this.setState({...this.state, suggestionsLoading: true});
         api.projectSuggestions(this.props.id, 10).then(res => {
-            this.setState({...this.state, suggestions: {loading: false, papers: res}});
+            this.setState({...this.state, suggestions: res, suggestionsLoading: false});
         }).catch(err => {
             message.error(err.toString());
-            this.setState({...this.state, suggestions: {loading: false, papers: []}});
+            this.setState({...this.state, suggestions: [], suggestionsLoading: false});
         });
     }
 
@@ -255,7 +333,9 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         const cards = tabPapers.map(val => {
             const cardKey = val.key + this.state.refreshed.toString();
             if(matcher.matches(val.paper, val.projectPaper)) {
-                return <PaperCard projectPaper={val.projectPaper} paper={val.paper} key={cardKey} editEvent={req => this.editPaper(req)} />
+                return <PaperCard projectPaper={val.projectPaper} paper={val.paper} key={cardKey}
+                                  editEvent={req => this.editPaper(req)}
+                                  actionEvent={req => this.paperAction(req, null)} />
             } else {
                 return null;
             }
@@ -270,16 +350,16 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
     }
 
     private suggestionsPanel(): React.ReactElement {
-        const suggestions = this.state.suggestions;
-        if(suggestions.loading) {
+        if(this.state.suggestionsLoading) {
             return <div className="project-papers-panel"><Skeleton active /></div>;
         }
-        const papers = suggestions.papers;
+        const papers = this.state.suggestions;
         const cards = papers.map(val => {
             const paperId = val.ids[0];
             const projectPaper: ProjectPaper = {added: new Date().getTime(), tags: [], notes: null, id: paperId};
             const cardKey = this.paperKey(paperId) + this.state.refreshed.toString();
-            return <PaperCard paper={val} projectPaper={projectPaper} editEvent={() => {}} key={cardKey} readonly />
+            return <PaperCard paper={val} projectPaper={projectPaper} editEvent={() => {}} key={cardKey} readonly
+                              actionEvent={req => this.paperAction(req, null)}/>
         })
         return (
             <div className="project-papers-panel">

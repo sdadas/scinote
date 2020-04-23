@@ -35,13 +35,10 @@ public class ProjectSuggestions implements Serializable {
         this.reverseReferences = reverseReferences;
     }
 
-    void remove(List<PaperId> ids) {
-        remove(references, ids);
-        remove(reverseReferences, ids);
-    }
 
     void remove(PaperId id) {
-        remove(Collections.singletonList(id));
+        references.remove(id);
+        reverseReferences.remove(id);
     }
 
     void addRefsFromPaper(Paper paper, Project project) {
@@ -55,12 +52,12 @@ public class ProjectSuggestions implements Serializable {
     void removeRefsFromPaper(Paper paper) {
         if(paper instanceof AcademicPaper) {
             AcademicPaper ap = (AcademicPaper) paper;
-            remove(references, ap.referencesAsPaperIds());
-            remove(reverseReferences, ap.reverseReferencesAsPaperIds());
+            decrement(references, ap.referencesAsPaperIds());
+            decrement(reverseReferences, ap.reverseReferencesAsPaperIds());
         }
     }
 
-    private void remove(Candidates candidates, List<PaperId> ids) {
+    private void decrement(Candidates candidates, List<PaperId> ids) {
         if(ids != null) {
             Set<PaperId> refs = new HashSet<>(ids);
             refs.forEach(candidates::decrement);
