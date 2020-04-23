@@ -2,7 +2,7 @@ import * as React from "react";
 import {EditPaperRequest, Paper, PaperActionRequest, ProjectPaper, WebLocation} from "../../model";
 import {Popover, Skeleton, Tag} from "antd";
 import {Inplace} from "../utils/inplace";
-import {FileOutlined, TagsOutlined, LinkOutlined, DownCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined} from '@ant-design/icons';
+import {FileOutlined, TagsOutlined, LinkOutlined, DownCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined, FormOutlined} from '@ant-design/icons';
 import {api} from "../../service/api";
 
 interface PaperCardProps {
@@ -84,7 +84,7 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
             display = <div className="paper-notes">{notes}</div>;
             className = "paper-edits paper-block-edits";
         } else {
-            display = <span className="paper-edits-icon"><FileOutlined /> Notes</span>;
+            display = <span className="paper-edits-icon"><FileOutlined />&nbsp;Notes</span>;
             className = "paper-edits paper-inline-edits";
         }
         return (
@@ -103,7 +103,7 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
             display = <div className="paper-tags">{elements}</div>;
             className = "paper-edits paper-inline-edits";
         } else {
-            display = <span className="paper-edits-icon"><TagsOutlined /> Tags</span>;
+            display = <span className="paper-edits-icon"><TagsOutlined />&nbsp;Tags</span>;
             className = "paper-edits paper-inline-edits";
         }
         const tagsValue = tags.length > 0 ? tags.join(",") : " ";
@@ -176,6 +176,12 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
         }
     }
 
+    private citations(): React.ReactElement {
+        const citations = this.props.paper.citations;
+        const title = "Cited by " + citations;
+        return citations ? <span className="paper-edits-icon" title={title}><FormOutlined/>&nbsp;{citations}</span> : null;
+    }
+
     render(): React.ReactElement {
         const paper = this.props.paper;
         const readonly = this.props.readonly;
@@ -188,8 +194,11 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
                 </div>
                 {this.authors()}
                 {this.source()}
-                {readonly ? null : this.tags()}
-                {readonly ? null : this.notes()}
+                <div>
+                    {this.citations()}
+                    {readonly ? null : this.tags()}
+                    {readonly ? null : this.notes()}
+                </div>
             </div>
         )
     }

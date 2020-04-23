@@ -61,6 +61,8 @@ export class FilterMatcher {
             return FilterMatcher.sortYearAsc;
         } else if(this.sort == "year:desc") {
             return FilterMatcher.sortYearDesc;
+        } else if(this.sort == "citations") {
+            return FilterMatcher.sortCitations;
         } else {
             return FilterMatcher.sortDefault;
         }
@@ -84,6 +86,10 @@ export class FilterMatcher {
 
     private static sortYearAsc(o1: PaperDetails, o2: PaperDetails): number {
         return (o1.paper.year||9999) - (o2.paper.year||9999);
+    }
+
+    private static sortCitations(o1: PaperDetails, o2: PaperDetails): number {
+        return (o2.paper.citations||0) - (o1.paper.citations||0);
     }
 }
 
@@ -145,6 +151,7 @@ export class FiltersComponent extends React.Component<FiltersProps, FiltersObjec
                 <Select className="project-filters-sort" defaultValue="default" onChange={val => this.sortChanged(val)}
                         suffixIcon={<SortAscendingOutlined />}>
                     <Option key="default" value="default">Date added</Option>
+                    <Option key="citations" value="citations">Citations</Option>
                     <Option key="title:asc" value="title:asc">Title ascending</Option>
                     <Option key="title:desc" value="title:desc">Title descending</Option>
                     <Option key="year:asc" value="year:asc">Year ascending</Option>

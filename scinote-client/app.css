@@ -222,7 +222,6 @@ h6 {font-size: 1em;}
 
 .paper-tags {
     display: inline;
-    padding-left: 10px;
 }
 
 .paper-tags span.ant-tag {
@@ -246,8 +245,7 @@ h6 {font-size: 1em;}
 }
 
 .paper-edits-icon {
-    padding-left: 10px;
-    padding-right: 2px;
+    padding-right: 15px;
 }
 
 .paper-edits-icon:hover {
