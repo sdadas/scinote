@@ -280,12 +280,13 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
 
     private header(): React.ReactElement {
         const project = this.state.project;
+        const bibtexUrl = api.projectBibTeX(this.props.id);
         return (
             <div className="project-header">
                 <h1 style={{marginBottom: "0px"}}>
                     <Inplace type="text" value={project.title} onSave={val => this.editProject(val)} onValidate={val => val.trim().length > 0} />
                 </h1>
-                <span style={{color: "#999"}}>ID: {project.id}</span>
+                <span style={{color: "#999"}}>ID: {project.id}</span>&nbsp;<a href={bibtexUrl} target="_blank">[BibTeX]</a>
             </div>
         )
     }

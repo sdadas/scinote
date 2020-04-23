@@ -2,7 +2,7 @@ import {
     ActionResponse, EditPaperRequest,
     EditProjectRequest,
     Paper,
-    PaperActionRequest,
+    PaperActionRequest, PaperId,
     Project,
     ProjectActionRequest,
     ProjectInfo
@@ -68,6 +68,14 @@ class APIService {
 
     public projectSuggestions(projectId: string, num: number): Promise<Paper[]> {
         return fetch(`${this.baseURL}/project/${projectId}/suggestions?num=${num}`).then((res) => res.json());
+    }
+
+    public projectBibTeX(projectId: string): string {
+        return `${this.baseURL}/project/${projectId}/bibtex.bib`;
+    }
+
+    public paperBibTeX(paperId: PaperId): string {
+        return `${this.baseURL}/paper/${paperId.repo}/${paperId.id}/bibtex.bib`;
     }
 
     private post(url: string, body: any): Promise<any> {

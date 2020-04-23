@@ -132,6 +132,7 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
     }
 
     private actionMenu(): React.ReactElement {
+        const bibtexUrl = api.paperBibTeX(this.props.projectPaper.id);
         return (
             <div className="paper-actions-menu">
                 <div className="paper-actions-menu-tabs">
@@ -139,7 +140,7 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
                     <CloseCircleOutlined onClick={() => this.paperAction("REJECT")}  className="paper-actions-menu-icon" title="Reject" />
                     <QuestionCircleOutlined onClick={() => this.paperAction("READ_LATER")}  className="paper-actions-menu-icon" title="Read later" />
                 </div>
-                <a href="#" target="_blank">Export to BibTeX</a>
+                <a href={bibtexUrl} target="_blank">Export to BibTeX</a>
             </div>
         )
     }
