@@ -37,11 +37,6 @@ interface ProjectState {
     filters: FiltersObject;
 }
 
-interface ProjectSuggestions {
-    loading: boolean;
-    papers: Paper[];
-}
-
 export class ProjectView extends React.Component<ProjectProps, ProjectState> {
 
     constructor(props: Readonly<any>) {
