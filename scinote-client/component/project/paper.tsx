@@ -38,7 +38,7 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
             const request: EditPaperRequest = {paperId: this.props.projectPaper.id, notes: this.state.notes, tags: []};
             this.props.editEvent(request);
         } else {
-            const tags: string[] = value.split(",").filter(val => val.trim().length > 0);
+            const tags: string[] = value.split(",").map(val => val.trim()).filter(val => val.length > 0);
             const request: EditPaperRequest = {paperId: this.props.projectPaper.id, notes: this.state.notes, tags: tags};
             this.props.editEvent(request);
             this.setState({...this.state, tags: tags});
