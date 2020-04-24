@@ -3,6 +3,7 @@ package com.sdadas.scinote.project;
 import com.sdadas.scinote.cache.CacheService;
 import com.sdadas.scinote.cache.model.Cached;
 import com.sdadas.scinote.project.model.*;
+import com.sdadas.scinote.project.model.graph.ProjectGraph;
 import com.sdadas.scinote.repos.ReposService;
 import com.sdadas.scinote.shared.model.paper.Paper;
 import com.sdadas.scinote.shared.model.paper.PaperId;
@@ -137,6 +138,17 @@ public class ProjectServiceImpl implements ProjectService {
         Project value = cached.getValue();
         Set<PaperId> ids = value.getTopCandidatesRefsFirst(num);
         return repos.papersByIds(new ArrayList<>(ids));
+    }
+
+    @Override
+    public ProjectGraph getProjectGraph(String projectId) {
+        Cached<Project> cached = cache.get(projectId, Project.class);
+        if(cached == null) return ProjectGraph.empty();
+        Project project = cached.getValue();
+        List<PaperId> ids = project.getAccepted().stream().map(ProjectPaper::getId).collect(Collectors.toList());
+        List<Paper> papers = repos.papersByIds(ids);
+        ProjectGraphBuilder builder = new ProjectGraphBuilder(papers);
+        return builder.build();
     }
 
     private ActionResponse createProject(ProjectActionRequest request) {

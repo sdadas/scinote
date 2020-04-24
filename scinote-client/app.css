@@ -184,6 +184,16 @@ h6 {font-size: 1em;}
     border: 1px solid #d9d9d9;
 }
 
+.project-graph-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 1em;
+    background: #fff;
+    min-height: 1000px;
+    border: 1px solid #d9d9d9;
+}
+
 .project-filters {
     display: flex;
     flex-direction: row;

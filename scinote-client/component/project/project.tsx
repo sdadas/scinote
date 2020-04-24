@@ -7,7 +7,7 @@ import {
     PaperDetails,
     PaperId,
     Project,
-    ProjectActionRequest,
+    ProjectActionRequest, ProjectGraph,
     ProjectPaper,
     UIAction
 } from "../../model";
@@ -19,6 +19,7 @@ import {Redirect} from "react-router-dom";
 import {Inplace} from "../utils/inplace";
 import {FilterMatcher, FiltersComponent, FiltersObject} from "./filters";
 import {AppUtils} from "../../utils";
+import {ProjectGraphView} from "./graph";
 
 interface ProjectProps {
     id: string;
@@ -30,8 +31,9 @@ interface ProjectState {
     project?: Project;
     suggestionsLoading: boolean;
     suggestions: Paper[];
+    graph?: ProjectGraph;
     papers: Record<string, Paper>;
-    tab: "accepted" | "rejected" | "readLater" | "suggestions";
+    tab: "accepted" | "rejected" | "readLater" | "suggestions" | "graph";
     deleted?: boolean;
     refreshed: number;
     filters: FiltersObject;
@@ -269,6 +271,17 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         this.setState({...this.state, filters: filters});
     }
 
+    private onShowProjectGraph(e: MouseEvent) {
+        e.preventDefault();
+        this.setState({...this.state, tab: "graph", graph: null});
+        api.projectGraph(this.props.id).then(res => {
+            this.setState({...this.state, graph: res});
+        }).catch(err => {
+            message.error(err.toString());
+            this.setState({...this.state, graph: null});
+        });
+    }
+
     private loader(): React.ReactElement {
         return (
             <div className="loading">
@@ -286,7 +299,9 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
                 <h1 style={{marginBottom: "0px"}}>
                     <Inplace type="text" value={project.title} onSave={val => this.editProject(val)} onValidate={val => val.trim().length > 0} />
                 </h1>
-                <span style={{color: "#999"}}>ID: {project.id}</span>&nbsp;<a href={bibtexUrl} target="_blank">[BibTeX]</a>
+                <span style={{color: "#999"}}>ID: {project.id}</span>&nbsp;
+                <a href={bibtexUrl} target="_blank">[BibTeX]</a>&nbsp;
+                <a href="#" onClick={(e: any) => this.onShowProjectGraph(e)}>[Citation graph]</a>
             </div>
         )
     }
@@ -364,6 +379,19 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         )
     }
 
+    private graphPanel(): React.ReactElement {
+        return <ProjectGraphView graph={this.state.graph} />
+    }
+
+    private content(): React.ReactElement {
+        const tab = this.state.tab;
+        if(tab === "graph") {
+            return this.graphPanel();
+        } else {
+            return this.papersPanel();
+        }
+    }
+
     private getAllTags(): string[] {
         const tags = new Set<string>();
         const proj = this.state.project;
@@ -389,7 +417,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
             <div className="project-content">
                 {this.header()}
                 {this.tabs()}
-                {this.papersPanel()}
+                {this.content()}
             </div>
         )
     }

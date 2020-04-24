@@ -70,6 +70,28 @@ export interface PaperDetails {
     projectPaper: ProjectPaper;
 }
 
+export interface ProjectGraph {
+    nodes: ProjectGraphNode[];
+    edges: ProjectGraphEdge[];
+}
+
+export interface ProjectGraphNode {
+    id: string;
+    label: string;
+    size: number;
+    url?: string;
+    color?: string;
+    originalColor?: string;
+}
+
+export interface ProjectGraphEdge {
+    id: string;
+    source: string;
+    target: string;
+    color?: string;
+    originalColor?: string;
+}
+
 export interface ActionResponse {
     errors: string[];
     result?: any;

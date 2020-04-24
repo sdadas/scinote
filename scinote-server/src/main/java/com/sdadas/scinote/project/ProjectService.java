@@ -4,6 +4,7 @@ import com.sdadas.scinote.project.model.EditPaperRequest;
 import com.sdadas.scinote.project.model.EditProjectRequest;
 import com.sdadas.scinote.project.model.PaperActionRequest;
 import com.sdadas.scinote.project.model.ProjectActionRequest;
+import com.sdadas.scinote.project.model.graph.ProjectGraph;
 import com.sdadas.scinote.shared.model.paper.Paper;
 import com.sdadas.scinote.shared.model.project.Project;
 import com.sdadas.scinote.shared.model.project.ProjectInfo;
@@ -29,4 +30,6 @@ public interface ProjectService {
     ActionResponse projectAction(ProjectActionRequest request);
 
     List<Paper> getSuggestions(String projectId, int num);
+
+    ProjectGraph getProjectGraph(String projectId);
 }

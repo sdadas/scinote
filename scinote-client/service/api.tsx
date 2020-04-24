@@ -4,7 +4,7 @@ import {
     Paper,
     PaperActionRequest, PaperId,
     Project,
-    ProjectActionRequest,
+    ProjectActionRequest, ProjectGraph,
     ProjectInfo
 } from "../model";
 
@@ -48,6 +48,10 @@ class APIService {
 
     public projectDetails(projectId: string): Promise<Project> {
         return fetch(`${this.baseURL}/project/${projectId}`).then((res) => res.json());
+    }
+
+    public projectGraph(projectId: string): Promise<ProjectGraph> {
+        return fetch(`${this.baseURL}/project/${projectId}/graph`).then((res) => res.json());
     }
 
     public projectAction(request: ProjectActionRequest): Promise<ActionResponse> {

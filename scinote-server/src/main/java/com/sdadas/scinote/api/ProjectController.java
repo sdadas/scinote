@@ -5,6 +5,7 @@ import com.sdadas.scinote.project.model.EditPaperRequest;
 import com.sdadas.scinote.project.model.EditProjectRequest;
 import com.sdadas.scinote.project.model.PaperActionRequest;
 import com.sdadas.scinote.project.model.ProjectActionRequest;
+import com.sdadas.scinote.project.model.graph.ProjectGraph;
 import com.sdadas.scinote.shared.model.paper.Paper;
 import com.sdadas.scinote.shared.model.project.Project;
 import com.sdadas.scinote.shared.model.project.ProjectInfo;
@@ -41,6 +42,12 @@ public class ProjectController {
         Project project = service.getProjectById(projectId);
         if(project != null) project.setSuggestions(null);
         return ResponseEntity.of(Optional.ofNullable(project));
+    }
+
+    @GetMapping(path = "/project/{projectId}/graph", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProjectGraph> getProjectGraph(@PathVariable String projectId) {
+        ProjectGraph graph = service.getProjectGraph(projectId);
+        return ResponseEntity.of(Optional.ofNullable(graph));
     }
 
     @PostMapping(path = "/project/edit", produces = MediaType.APPLICATION_JSON_VALUE)

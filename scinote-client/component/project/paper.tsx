@@ -99,7 +99,7 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
         let display;
         let className;
         if(tags.length > 0) {
-            const elements = tags.map(val => <Tag key={val} color="geekblue">{val}</Tag>);
+            const elements = tags.map((val, idx) => <Tag key={val + idx.toString()} color="geekblue">{val}</Tag>);
             display = <div className="paper-tags">{elements}</div>;
             className = "paper-edits paper-inline-edits";
         } else {
