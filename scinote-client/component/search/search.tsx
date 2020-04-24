@@ -85,13 +85,13 @@ export class SearchPanel extends React.Component<SearchPanelProps, SearchPanelSt
     render(): React.ReactElement {
         return (
             <div className="search-panel">
-                <h1 className="search-title">scinote</h1>
-                    <div className="search-input">
-                        <Spin tip="Searching..." indicator={<LoadingOutlined spin />} spinning={this.state.loading}>
-                            {this.searchInput()}
-                            {this.uploadInput()}
-                        </Spin>
-                    </div>
+                <img src={api.logoUrl()} alt="scinote" title="scinote" style={{width: "200px", opacity: 0.85}} />
+                <div className="search-input">
+                    <Spin tip="Searching..." indicator={<LoadingOutlined spin />} spinning={this.state.loading}>
+                        {this.searchInput()}
+                        {this.uploadInput()}
+                    </Spin>
+                </div>
             </div>
         )
     }

@@ -26,6 +26,10 @@ class APIService {
         }
     }
 
+    public logoUrl() {
+        return `${this.baseURL}/logo.png`;
+    }
+
     public search(query: string): Promise<Paper[]> {
         return fetch(`${this.baseURL}/search?q=${query}`).then((res) => res.json());
     }

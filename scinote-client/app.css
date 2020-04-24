@@ -39,7 +39,7 @@ h6 {font-size: 1em;}
 .search-panel {
     display: flex;
     flex-direction: column;
-    justify-content: left;
+    justify-content: center;
     align-items: start;
     width: 100%;
     max-width: 1000px;
@@ -63,16 +63,10 @@ h6 {font-size: 1em;}
     padding-top: 10px;
 }
 
-.search-title {
-    font-size: 2.5em;
-    font-weight: lighter;
-    margin-bottom: 0.1em;
-}
-
 .search-input {
     width: 100%;
     max-width: 1000px;
-    margin-bottom: 30px;
+    margin-top: 15px;
 }
 
 .search-input input {
