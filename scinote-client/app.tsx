@@ -27,7 +27,7 @@ export class Application extends React.Component<any, ApplicationState> {
             <HashRouter>
                 <div className="app-layout">
                     <section className="projects-section">
-                        <ProjectsView action={this.state.action} />
+                        <ProjectsView {...{action: this.state.action}} />
                     </section>
                     <section className="content-section">
                         <SearchPanel actionEvent={(res) => this.actionEvent(res)} />
