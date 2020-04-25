@@ -1,0 +1,8 @@
+.cache
+.ideaDataSources
+.idea
+data
+files
+dist
+node
+node_modules
