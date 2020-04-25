@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  scinote:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scinote
+    ports:
+      - '8080:8080'
+    environment:
+      - 'paper.parser.url=http://spv2:8081/v1/json/pdf'
+      - 'academic.search.secret=${ACADEMIC_SEARCH_SECRET}'
+    volumes:
+      - ./data:/root/data
+      - ./files:/root/files
+    restart: unless-stopped
+
+  spv2:
+    image: allenai/spv2:2.10
+    container_name: spv2
+    expose:
+      - '8081'
+    environment:
+      - 'portal.elastic.url=http://radon-dev-elastic:9200'
+      - 'api.server=https://radon-dev.opi.org.pl/opendata/'
+      - 'spring.profiles.active=dev'
+      - 'database.graylog.environment=dev'
+    restart: unless-stopped

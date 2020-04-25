@@ -15,6 +15,7 @@ Microsoft offers a free quota of 10,000 requests per month which should be enoug
 * Uploading PDF files and adding them to collection. This is an optional feature which uses  [Science-parse V2 server](https://github.com/allenai/spv2).
 
 ### Getting started
+#### SciNote standalone
 1\. Build docker image:
 ```sh
 docker build --tag scinote .
@@ -22,5 +23,13 @@ docker build --tag scinote .
 2\. Run docker:
 ```sh
 docker run -d -e academic.search.secret=[YOUR_MICROSOFT_API_KEY] -v $(pwd)/data:/root/data -v $(pwd)/files:/root/files -p 8080:8080 -t scinote scinote
+```
+3\. Open [http://localhost:8080](http://localhost:8080) in the browser.
+#### SciNote with SPv2 (enables PDF parsing functionality)
+1\. Set `ACADEMIC_SEARCH_SECRET` environment variable to your Microsoft API key
+
+2\. Run docker-compose:
+```sh
+docker-compose up
 ```
 3\. Open [http://localhost:8080](http://localhost:8080) in the browser.
