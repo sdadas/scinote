@@ -18,13 +18,18 @@ export class Inplace extends React.Component<InplaceProps, any> {
 
     private onBlur() {
         const current: EasyEdit = this.ref.current;
-        setTimeout(() => current.setState({...current.state, editing: false, hover: false}), 100);
+        setTimeout(() => current._onSave(), 100);
+
     }
 
     render(): React.ReactElement {
+        let editComponent = this.props["editComponent"];
+        if(editComponent) {
+            editComponent = React.cloneElement(editComponent, {onBlur: () => this.onBlur()});
+        }
         return (
             <EasyEdit type="text" saveButtonLabel="Save" cancelButtonLabel="Cancel" ref={this.ref}
-                      onBlur={() => this.onBlur()} {...this.props} />
+                      onBlur={() => this.onBlur()} {...this.props} editComponent={editComponent} />
         )
     }
 }

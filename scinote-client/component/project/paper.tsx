@@ -4,6 +4,7 @@ import {Popover, Skeleton, Tag} from "antd";
 import {Inplace} from "../utils/inplace";
 import {FileOutlined, TagsOutlined, LinkOutlined, DownCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined, FormOutlined} from '@ant-design/icons';
 import {api} from "../../service/api";
+import {TagsInput} from "./tags";
 
 interface PaperCardProps {
     projectPaper: ProjectPaper;
@@ -27,18 +28,25 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
     }
 
     private editNotes(value: string) {
+        if(value === this.state.notes) return;
         const request: EditPaperRequest = {paperId: this.props.projectPaper.id, notes: value, tags: this.state.tags};
         this.props.editEvent(request);
         this.setState({...this.state, notes: value});
     }
 
-    private editTags(value: string) {
-        if(value.trim().length === 0) {
+    private editTags(value: string | string[]) {
+        const tags = Array.isArray(value) ? value : value.split(",").map(v => v.trim()).filter(v => v.length > 0);
+        const prev = this.state.tags;
+        if(prev && tags) {
+            if(prev.length === tags.length && prev.every(function(value, index) { return value === tags[index]})) {
+                return;
+            }
+        }
+        if(tags.length === 0) {
             this.setState({...this.state, tags: []});
             const request: EditPaperRequest = {paperId: this.props.projectPaper.id, notes: this.state.notes, tags: []};
             this.props.editEvent(request);
         } else {
-            const tags: string[] = value.split(",").map(val => val.trim()).filter(val => val.length > 0);
             const request: EditPaperRequest = {paperId: this.props.projectPaper.id, notes: this.state.notes, tags: tags};
             this.props.editEvent(request);
             this.setState({...this.state, tags: tags});
@@ -106,10 +114,11 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
             display = <span className="paper-edits-icon"><TagsOutlined />&nbsp;Tags</span>;
             className = "paper-edits paper-inline-edits";
         }
-        const tagsValue = tags.length > 0 ? tags.join(",") : " ";
+        const edit = <TagsInput />;
         return (
             <div className={className} key="tags">
-                <Inplace type="textarea" value={tagsValue} onSave={val => this.editTags(val)} displayComponent={display} />
+                <Inplace value={tags} onSave={val => this.editTags(val)} disableAutoSubmit={true}
+                         displayComponent={display} editComponent={edit} />
             </div>
         )
     }
