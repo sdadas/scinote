@@ -9,4 +9,6 @@ import com.sdadas.scinote.repos.parse.model.ParseResponse;
 public interface PaperParserService {
 
     ParseResponse parse(ParseRequest request);
+
+    boolean serviceAvailable();
 }

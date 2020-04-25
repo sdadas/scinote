@@ -19,4 +19,6 @@ public interface ReposService {
     List<Paper> papersByIds(List<PaperId> ids);
 
     ParseResponse parse(ParseRequest request);
+
+    boolean parseServiceAvailable();
 }

@@ -16,11 +16,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -35,10 +41,33 @@ public class PaperParserServiceImpl implements PaperParserService {
 
     private final Spv2RestClient client;
 
+    private volatile boolean serviceAvailable;
+
     @Autowired
     public PaperParserServiceImpl(PaperParserConfig config) {
         this.config = config;
         this.client = new Spv2RestClient(config.getUrl());
+        ForkJoinPool.commonPool().execute(() -> checkServiceAvailable(config.getUrl()));
+    }
+
+    public void checkServiceAvailable(String url) {
+        if(StringUtils.isBlank(url)) {
+            this.serviceAvailable = false;
+        } else {
+            LOG.info("Checking availability of {}", url);
+            try {
+                URI uri = new URI(url);
+                String host = uri.getHost();
+                if(StringUtils.isNotBlank(host)) {
+                    InetAddress address = InetAddress.getByName(host);
+                    this.serviceAvailable = address.isReachable(30000);
+                } else {
+                    this.serviceAvailable = false;
+                }
+            } catch (URISyntaxException | IOException e) {
+                this.serviceAvailable = false;
+            }
+        }
     }
 
     @Override
@@ -55,6 +84,15 @@ public class PaperParserServiceImpl implements PaperParserService {
             response.setError("Failed to parse PDF");
         }
         return response;
+    }
+
+    @Override
+    public boolean serviceAvailable() {
+        if(StringUtils.isBlank(config.getUrl())) {
+            return false;
+        } else {
+            return serviceAvailable;
+        }
     }
 
     private ParseResponse validate(ParseRequest request) {

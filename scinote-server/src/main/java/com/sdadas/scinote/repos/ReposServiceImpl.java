@@ -110,6 +110,11 @@ public class ReposServiceImpl implements ReposService {
         return response;
     }
 
+    @Override
+    public boolean parseServiceAvailable() {
+        return parser.serviceAvailable();
+    }
+
     private List<Paper> query(String query, RepoClient repo) {
         PaperId paperId = repo.supports(query);
         if(paperId != null) {

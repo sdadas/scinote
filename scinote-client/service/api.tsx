@@ -42,6 +42,10 @@ class APIService {
         return `${this.baseURL}/parse`;
     }
 
+    public parseServiceAvailable(): Promise<boolean> {
+        return fetch(`${this.baseURL}/parse/available`).then((res) => res.json());
+    }
+
     public fileUrl(relativeUrl: string) {
         return `${this.baseURL}/${relativeUrl}`;
     }

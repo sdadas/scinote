@@ -50,4 +50,9 @@ public class PaperController {
         ParseResponse response = service.parse(request);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping(path = "/parse/available", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean parseServiceAvailable() {
+        return service.parseServiceAvailable();
+    }
 }

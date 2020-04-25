@@ -14,13 +14,24 @@ interface SearchPanelProps {
 interface SearchPanelState {
     search: string;
     loading: boolean;
+    parseServiceAvailable: boolean;
 }
 
 export class SearchPanel extends React.Component<SearchPanelProps, SearchPanelState> {
 
     constructor(props: Readonly<any>) {
         super(props);
-        this.state = {search: "", loading: false};
+        this.state = {search: "", loading: false, parseServiceAvailable: false};
+    }
+
+    componentDidMount(): void {
+        this.isParseServiceAvailable();
+    }
+
+    private isParseServiceAvailable() {
+        api.parseServiceAvailable().then(res => {
+            this.setState({...this.state, parseServiceAvailable: res});
+        }).catch(err => message.error(err));
     }
 
     private search(query: string, event: any): void {
@@ -31,7 +42,7 @@ export class SearchPanel extends React.Component<SearchPanelProps, SearchPanelSt
             if(val.length > 0) {
                 this.props.actionEvent({payload: val[0], type: "SEARCH"} as UIAction);
             }
-            this.setState({search: "", loading: false});
+            this.setState({...this.state, search: "", loading: false});
         }).catch(err => {
             message.error(err.toString());
             this.setState({...this.state, loading: false});
@@ -89,7 +100,7 @@ export class SearchPanel extends React.Component<SearchPanelProps, SearchPanelSt
                 <div className="search-input">
                     <Spin tip="Searching..." indicator={<LoadingOutlined spin />} spinning={this.state.loading}>
                         {this.searchInput()}
-                        {this.uploadInput()}
+                        {this.state.parseServiceAvailable ? this.uploadInput() : null}
                     </Spin>
                 </div>
             </div>
