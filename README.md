@@ -22,7 +22,7 @@ docker build --tag scinote .
 ```
 2\. Run docker:
 ```sh
-docker run -d -e academic.search.secret=[YOUR_MICROSOFT_API_KEY] -v $(pwd)/data:/root/data -v $(pwd)/files:/root/files -p 8080:8080 -t scinote scinote
+docker run -d -e academic.search.secret=[YOUR_MICROSOFT_API_KEY] -v $(pwd)/data:/root/data -v $(pwd)/files:/root/files -p 8080:8080 --name scinote scinote
 ```
 3\. Open [http://localhost:8080](http://localhost:8080) in the browser.
 #### SciNote with SPv2 (enables PDF parsing functionality)
