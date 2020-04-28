@@ -10,7 +10,7 @@ interface TagsInputProps {
 
 export class TagsInput extends React.Component<TagsInputProps, any> {
 
-    constructor(props: Readonly<any>) {
+    constructor(props: Readonly<TagsInputProps>) {
         super(props);
         this.state = {};
     }
@@ -28,7 +28,7 @@ export class TagsInput extends React.Component<TagsInputProps, any> {
         const style = {width: "100%", marginTop: "2px"};
         return (
             <Select mode="tags" value={this.props.value} style={style} onChange={val => this.onChange(val)}
-                    onBlur={this.props.onBlur as any} defaultOpen={false} autoFocus={true} />
+                    onBlur={this.props.onBlur as any} defaultOpen={true} autoFocus={true} />
         )
     }
 }
