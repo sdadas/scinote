@@ -5,9 +5,9 @@ import com.sdadas.scinote.shared.model.paper.Author;
 import com.sdadas.scinote.shared.model.paper.Paper;
 import com.sdadas.scinote.shared.model.paper.Source;
 import cz.jirutka.unidecode.Unidecode;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jbibtex.*;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -51,11 +51,12 @@ public class BibtexServiceImpl implements BibtexService {
         entry.addField(BibTeXEntry.KEY_AUTHOR, value(paperAuthors(paper)));
         entry.addField(BibTeXEntry.KEY_YEAR, value(Objects.toString(paper.getYear())));
         Source source = paper.getSource();
-        Value sourceName = value(source.getName(), true);
+        String sourceName = ObjectUtils.firstNonNull(source.getName(), source.getVenue(), source.getVenueShort(), "");
+        Value sourceValue = value(sourceName, true);
         if(type.equals(BibTeXEntry.TYPE_ARTICLE)) {
-            entry.addField(BibTeXEntry.KEY_JOURNAL, sourceName);
+            entry.addField(BibTeXEntry.KEY_JOURNAL, sourceValue);
         } else if(type.equals(BibTeXEntry.TYPE_INPROCEEDINGS) || type.equals(BibTeXEntry.TYPE_INCOLLECTION)) {
-            entry.addField(BibTeXEntry.KEY_BOOKTITLE, sourceName);
+            entry.addField(BibTeXEntry.KEY_BOOKTITLE, sourceValue);
         }
         if(StringUtils.isNotBlank(source.getVenue())) {
             entry.addField(BibTeXEntry.KEY_ORGANIZATION, value(source.getVenue()));
@@ -81,6 +82,9 @@ public class BibtexServiceImpl implements BibtexService {
     }
 
     private String preserveCase(String val) {
+        if(StringUtils.isBlank(val)) {
+            return val;
+        }
         if(StringUtils.upperCase(val).equals(val)) {
             return val; // Ignore values that are all caps
         }
