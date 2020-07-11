@@ -10,16 +10,26 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "paper.parser")
 public class PaperParserConfig {
 
-    private String url;
+    private String spv2Url;
+
+    private String grobidHome;
 
     private String storageDir;
 
-    public String getUrl() {
-        return url;
+    public String getSpv2Url() {
+        return spv2Url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setSpv2Url(String spv2Url) {
+        this.spv2Url = spv2Url;
+    }
+
+    public String getGrobidHome() {
+        return grobidHome;
+    }
+
+    public void setGrobidHome(String grobidHome) {
+        this.grobidHome = grobidHome;
     }
 
     public String getStorageDir() {

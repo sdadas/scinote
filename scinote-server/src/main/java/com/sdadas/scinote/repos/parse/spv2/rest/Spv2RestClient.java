@@ -1,6 +1,6 @@
-package com.sdadas.scinote.repos.parse.rest;
+package com.sdadas.scinote.repos.parse.spv2.rest;
 
-import com.sdadas.scinote.repos.parse.model.Spv2Response;
+import com.sdadas.scinote.repos.parse.spv2.model.Spv2Response;
 import com.sdadas.scinote.repos.shared.utils.RestClientBase;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -9,8 +9,6 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import java.util.Map;
 
 /**
  * @author Sławomir Dadas

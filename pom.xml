@@ -13,6 +13,15 @@
         <module>scinote-server</module>
     </modules>
 
+    <repositories>
+        <repository>
+            <snapshots><enabled>false</enabled></snapshots>
+            <id>bintray-rookies-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/rookies/maven</url>
+        </repository>
+    </repositories>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

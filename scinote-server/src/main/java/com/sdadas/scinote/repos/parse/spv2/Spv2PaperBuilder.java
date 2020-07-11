@@ -1,7 +1,7 @@
-package com.sdadas.scinote.repos.parse;
+package com.sdadas.scinote.repos.parse.spv2;
 
-import com.sdadas.scinote.repos.parse.model.Spv2Doc;
-import com.sdadas.scinote.repos.parse.model.Spv2Response;
+import com.sdadas.scinote.repos.parse.spv2.model.Spv2Doc;
+import com.sdadas.scinote.repos.parse.spv2.model.Spv2Response;
 import com.sdadas.scinote.repos.shared.exception.ExternalServiceException;
 import com.sdadas.scinote.shared.model.paper.Author;
 import com.sdadas.scinote.shared.model.paper.Paper;

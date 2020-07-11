@@ -32,26 +32,28 @@ public class AcademicPaperMatcher implements Serializable {
         if(candidates == null || candidates.isEmpty()) {
             return original;
         }
+        String repo = original.firstPaperId().getRepo();
+        boolean isUntrustedSource = StringUtils.equalsAny(repo, "url", "spv2", "grobid");
         Optional<PaperMatch> bestMatch = candidates.stream()
-                .map(val -> new PaperMatch(original, val))
+                .map(val -> new PaperMatch(original, val, isUntrustedSource))
                 .filter(val -> val.matches)
                 .min((o1, o2) -> Integer.compare(o2.score, o1.score));
         if(bestMatch.isPresent()) {
             AcademicPaper matched = (AcademicPaper) bestMatch.get().second;
-            return convert(matched);
+            return convert(matched, isUntrustedSource);
         } else {
             return original;
         }
     }
 
-    private Paper convert(AcademicPaper matched) {
+    private Paper convert(AcademicPaper matched, boolean isUntrustedSource) {
         AcademicPaper result = new AcademicPaper();
         BeanUtils.copyProperties(original, result);
-        PaperId paperId = original.firstPaperId();
-        if(StringUtils.equalsAny(paperId.getRepo(), "url", "spv2")) {
+        if(isUntrustedSource) {
             result.setTitle(matched.getTitle());
             result.setAuthors(matched.getAuthors());
             result.setSource(matched.getSource());
+            result.setYear(matched.getYear());
         }
         result.getIds().addAll(matched.getIds());
         result.setCitations(matched.getCitations());
@@ -75,13 +77,16 @@ public class AcademicPaperMatcher implements Serializable {
 
         private final Paper second;
 
+        private final boolean isUntrustedSource;
+
         private final boolean matches;
 
         private final int score;
 
-        private PaperMatch(Paper first, Paper second) {
+        private PaperMatch(Paper first, Paper second, boolean isUntrustedSource) {
             this.first = first;
             this.second = second;
+            this.isUntrustedSource = isUntrustedSource;
             this.matches = computeMatches();
             this.score = computeScore();
         }
@@ -102,6 +107,8 @@ public class AcademicPaperMatcher implements Serializable {
                     .map(val -> normalize(val.toString()))
                     .flatMap(val -> Arrays.stream(StringUtils.split(val)))
                     .collect(Collectors.toSet());
+
+            int errors = 0;
             for (Author author : firstAuthors) {
                 String name = normalize(author.toString());
                 String[] split = StringUtils.split(name);
@@ -113,7 +120,14 @@ public class AcademicPaperMatcher implements Serializable {
                     }
                 }
                 if(!anyMatch) {
-                    return false;
+                    if(isUntrustedSource) {
+                        errors++;
+                        if(errors > 2) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
                 }
             }
             return true;

@@ -1,5 +1,6 @@
 package com.sdadas.scinote.repos.parse.model;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 
 import java.io.Serializable;
@@ -35,5 +36,14 @@ public class ParseRequest implements Serializable {
 
     public void setResource(Resource resource) {
         this.resource = resource;
+    }
+
+    public ParseResponse createResponse() {
+        ParseResponse response = new ParseResponse();
+        String filename = this.getFilename();
+        if(!StringUtils.endsWithIgnoreCase(filename, ".pdf")) {
+            response.setError("Only PDF files are supported");
+        }
+        return response;
     }
 }

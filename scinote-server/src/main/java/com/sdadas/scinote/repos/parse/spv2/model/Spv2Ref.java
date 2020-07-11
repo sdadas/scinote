@@ -1,4 +1,4 @@
-package com.sdadas.scinote.repos.parse.model;
+package com.sdadas.scinote.repos.parse.spv2.model;
 
 import java.io.Serializable;
 import java.util.List;
