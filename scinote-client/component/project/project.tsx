@@ -78,10 +78,12 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
     }
 
     private cachePaper(paper: Paper): Record<string, Paper> {
-        const key = this.paperKey(paper.ids[0]);
         const papers = {...this.state.papers}
         this.createCachedDataForPaper(paper);
-        papers[key] = paper;
+        for(let id of paper.ids) {
+            const key = this.paperKey(id);
+            papers[key] = paper;
+        }
         return papers;
     }
 
@@ -252,7 +254,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
         if(ids.length == 0) return;
         api.papers(ids).then(res => {
             const values = {};
-            res.forEach(val => values[this.paperKey(val.ids[0])] = this.createCachedDataForPaper(val));
+            res.forEach(val => val.ids.forEach(id => values[this.paperKey(id)] = this.createCachedDataForPaper(val)));
             this.setState({...this.state, papers: {...this.state.papers, ...values}});
         }).catch(err => message.error(err.toString()));
     }
