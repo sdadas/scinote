@@ -22,12 +22,15 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,6 +47,8 @@ public class UrlParser {
 
     private final Url url;
 
+    private BufferedInputStream file;
+
     private Document document;
 
     public UrlParser(Url url) {
@@ -54,14 +59,32 @@ public class UrlParser {
         SSLSocketFactory sf = socketFactory();
         Connection.Response resp = Jsoup.connect(url.getOriginalUrl())
                 .sslSocketFactory(sf)
+                .ignoreContentType(true)
                 .maxBodySize(10 * 1024 * 1024)
                 .timeout(10000)
                 .execute();
+        String contentType = resp.contentType();
         int status = resp.statusCode();
         if(status != HttpStatus.OK.value()) {
             throw new IOException("Invalid http status " + status);
         }
-        this.document = resp.parse();
+        if(StringUtils.equalsAny(contentType, "application/pdf", "application/x-pdf")) {
+            this.file = resp.bodyStream();
+        } else {
+            this.document = resp.parse();
+        }
+    }
+
+    public boolean isFileContent() {
+        return this.file != null;
+    }
+
+    public BufferedInputStream getFileStream() {
+        return file;
+    }
+
+    public Url url() {
+        return url;
     }
 
     @SuppressWarnings("UnstableApiUsage")

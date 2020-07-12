@@ -4,6 +4,9 @@ import com.google.common.net.InternetDomainName;
 import com.linkedin.urls.Url;
 import com.linkedin.urls.detection.UrlDetector;
 import com.linkedin.urls.detection.UrlDetectorOptions;
+import com.sdadas.scinote.repos.parse.PaperParserService;
+import com.sdadas.scinote.repos.parse.model.ParseRequest;
+import com.sdadas.scinote.repos.parse.model.ParseResponse;
 import com.sdadas.scinote.repos.shared.RepoClient;
 import com.sdadas.scinote.repos.shared.exception.RepeatSearch;
 import com.sdadas.scinote.repos.shared.exception.RepeatSearchException;
@@ -11,6 +14,9 @@ import com.sdadas.scinote.shared.model.paper.Paper;
 import com.sdadas.scinote.shared.model.paper.PaperId;
 import com.sdadas.scinote.shared.model.paper.WebLocation;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -22,6 +28,14 @@ import java.util.List;
  */
 @Component
 public class UrlRepoClient implements RepoClient {
+
+    private final static Logger LOG = LoggerFactory.getLogger(UrlRepoClient.class);
+
+    private final PaperParserService parserService;
+
+    public UrlRepoClient(PaperParserService parserService) {
+        this.parserService = parserService;
+    }
 
     @Override
     public String repoId() {
@@ -47,6 +61,9 @@ public class UrlRepoClient implements RepoClient {
         PaperId id = new PaperId("url", originalUrl);
         UrlParser parser = new UrlParser(url);
         parser.download();
+        if(parser.isFileContent() && parserService.serviceAvailable()) {
+            return parsePaper(parser, id);
+        }
         List<String> dois = parser.findDOI();
         if(!dois.isEmpty()) {
             RepeatSearch context = new RepeatSearch(dois.get(0));
@@ -55,6 +72,20 @@ public class UrlRepoClient implements RepoClient {
             throw new RepeatSearchException(context);
         }
         return Collections.singletonList(parser.parse());
+    }
+
+    private List<Paper> parsePaper(UrlParser parser, PaperId id) {
+        InputStreamResource resource = new InputStreamResource(parser.getFileStream());
+        ParseRequest request = new ParseRequest("download.pdf", resource);
+        ParseResponse response = parserService.parse(request);
+        if(StringUtils.isNotBlank(response.getError())) {
+            LOG.error("Error parsing file {}", parser.url().getOriginalUrl());
+            return null;
+        } else {
+            Paper paper = response.getPaper();
+            paper.getIds().add(0, id);
+            return Collections.singletonList(paper);
+        }
     }
 
     @Override

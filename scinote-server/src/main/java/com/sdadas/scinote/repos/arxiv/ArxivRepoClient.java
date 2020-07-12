@@ -6,6 +6,7 @@ import com.sdadas.scinote.repos.shared.RepoClient;
 import com.sdadas.scinote.shared.model.paper.Paper;
 import com.sdadas.scinote.shared.model.paper.PaperId;
 import com.sdadas.scinote.repos.shared.utils.MultiRegexMatcher;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -69,6 +70,7 @@ public class ArxivRepoClient implements RepoClient {
     private String simplify(String query) {
         Matcher matched = matcher.matched(query);
         if(matched == null) return null;
-        return matched.group(matched.groupCount());
+        String id = matched.group(matched.groupCount());
+        return StringUtils.stripEnd(id, ".");
     }
 }
