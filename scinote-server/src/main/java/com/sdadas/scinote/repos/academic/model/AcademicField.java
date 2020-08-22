@@ -1,5 +1,7 @@
 package com.sdadas.scinote.repos.academic.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,11 +19,13 @@ public enum AcademicField {
     CITATIONS("CC"),
     ESTIMATED_CITATIONS("ECC"),
     AUTHORS("AA"),
-    AUTHOR_NAME("AuN", "AA.AuN"),
-    AUTHOR_ID("AuId", "AA.AuId"),
-    AUTHOR_AFFILIATION("AfN", "AA.AfN"),
-    AUTHOR_AFFILIATION_ID("AfId", "AA.AfId"),
-    AUTHOR_ORDER("S", "AA.S"),
+    AUTHOR_NAME("AA.AuN", "AA.AuN"),
+    AUTHOR_ORIGINAL_NAME("AA.DAuN","AA.DAuN"),
+    AUTHOR_ID("AA.AuId", "AA.AuId"),
+    AUTHOR_AFFILIATION("AA.AfN", "AA.AfN"),
+    AUTHOR_ORIGINAL_AFFILIATION("AA.DAfN", "AA.DAfN"),
+    AUTHOR_AFFILIATION_ID("AA.AfId", "AA.AfId"),
+    AUTHOR_ORDER("AA.S", "AA.S"),
     FOS_NAME("FN", "F.FN"),
     FOS_ID("FId", "F.FId"),
     JOURNAL_NAME("JN", "J.JN"),
@@ -32,7 +36,7 @@ public enum AcademicField {
     PAPER_WORDS("W"),
     EXT("E"),
     EXT_TITLE("DN"),
-    EXT_SOUCES("S"),
+    EXT_SOURCES("S"),
     EXT_SOURCE_TYPE("Ty", "S.Ty"),
     EXT_SOURCE_URL("U", "S.U"),
     EXT_VENUE_FULL("VFN"),
@@ -70,6 +74,14 @@ public enum AcademicField {
         return this.code;
     }
 
+    public String codeFragment() {
+        if(StringUtils.contains(this.code, '.'))  {
+            return StringUtils.substringAfterLast(this.code, ".");
+        } else {
+            return this.code;
+        }
+    }
+
     public String fullCode() {
         return this.fullCode;
     }
@@ -82,9 +94,24 @@ public enum AcademicField {
         fields.add(AcademicField.DATE);
         fields.add(AcademicField.CITATIONS);
         fields.add(AcademicField.ESTIMATED_CITATIONS);
-        fields.add(AcademicField.EXT);
         fields.add(AcademicField.AUTHOR_NAME);
+        fields.add(AcademicField.AUTHOR_ORIGINAL_NAME);
+        fields.add(AcademicField.AUTHOR_ORIGINAL_AFFILIATION);
+        fields.add(AcademicField.AUTHOR_ORDER);
         fields.add(AcademicField.REFERENCES);
+        fields.add(AcademicField.EXT_SOURCES);
+        fields.add(AcademicField.EXT_VOLUME);
+        fields.add(AcademicField.EXT_ISSUE);
+        fields.add(AcademicField.EXT_PUBLISHER);
+        fields.add(AcademicField.EXT_VENUE_SHORT);
+        fields.add(AcademicField.EXT_VENUE_FULL);
+        fields.add(AcademicField.EXT_FIRST_PAGE);
+        fields.add(AcademicField.EXT_LAST_PAGE);
+        fields.add(AcademicField.EXT_JOURNAL);
+        fields.add(AcademicField.EXT_BT);
+        fields.add(AcademicField.EXT_TITLE);
+        fields.add(AcademicField.EXT_TITLE);
+        fields.add(AcademicField.EXT_DOI);
         return fields.stream().map(AcademicField::code).collect(Collectors.joining(","));
     }
 }

@@ -102,19 +102,16 @@ public class AcademicRepoClient implements RepoClient {
         request.setAttributes(AcademicField.ENTITY_SCOPE);
         request.setCount(size);
         EvaluateResponse response = this.restClient.evaluate(request);
-        List<Paper> papers = createPapersFromResponse(response);
-        return papers;
+        return createPapersFromResponse(response);
     }
 
     @SuppressWarnings("unchecked")
-    private List<Paper> createPapersFromResponse(EvaluateResponse response) throws IOException {
+    private List<Paper> createPapersFromResponse(EvaluateResponse response) {
         List<Map<String, Object>> entities = response.getEntities();
         if(entities == null) return new ArrayList<>();
         List<Paper> results = new ArrayList<>();
         for (Map<String, Object> entity : entities) {
-            Object value = entity.get(AcademicField.EXT.code());
-            Map<String, Object> extensions = mapper.readValue(value.toString(), Map.class);
-            results.add(new AcademicPaper(entity, extensions));
+            results.add(new AcademicPaper(entity));
         }
         return results;
     }

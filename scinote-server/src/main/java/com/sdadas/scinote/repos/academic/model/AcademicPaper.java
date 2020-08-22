@@ -25,7 +25,7 @@ public class AcademicPaper extends Paper {
     }
 
     @SuppressWarnings("unchecked")
-    public AcademicPaper(Map<String, Object> entity, Map<String, Object> extensions) {
+    public AcademicPaper(Map<String, Object> entity) {
         PaperId id = new PaperId("academic", entity.get(AcademicField.ENTITY_ID.code()).toString());
         this.addId(id);
         this.setYear((Integer) entity.get(AcademicField.YEAR.code()));
@@ -37,17 +37,17 @@ public class AcademicPaper extends Paper {
         this.setCitations((Integer) entity.get(AcademicField.CITATIONS.code()));
         this.setEstimatedCitations((Integer) entity.get(AcademicField.ESTIMATED_CITATIONS.code()));
         this.setTitleNorm((String) entity.get(AcademicField.TITLE.code()));
-        this.setTitle((String) extensions.get(AcademicField.EXT_TITLE.code()));
+        this.setTitle((String) entity.get(AcademicField.EXT_TITLE.code()));
         String lang = (String) entity.get(AcademicField.LANGUAGE.code());
         if(StringUtils.isNotBlank(lang)) {
             this.setLanguages(Arrays.asList(StringUtils.split(lang, "@@@")));
         }
-        this.setUrls(createWebLocations((List<Map<String, Object>>) extensions.get(AcademicField.EXT_SOUCES.code())));
-        this.setReferences(createReferences((List<Object>) extensions.get("PR")));
-        this.setAuthors(createAuthors((List<Map<String, Object>>) extensions.get("ANF")));
-        this.setSource(createSource(extensions));
-        Integer firstPage = createNumericValue(extensions.get(AcademicField.EXT_FIRST_PAGE.code()));
-        Integer lastPage = createNumericValue(extensions.get(AcademicField.EXT_LAST_PAGE.code()));
+        this.setUrls(createWebLocations((List<Map<String, Object>>) entity.get(AcademicField.EXT_SOURCES.code())));
+        this.setReferences(createReferences((List<Object>) entity.get(AcademicField.REFERENCES.code())));
+        this.setAuthors(createAuthors((List<Map<String, Object>>) entity.get("AA")));
+        this.setSource(createSource(entity));
+        Integer firstPage = createNumericValue(entity.get(AcademicField.EXT_FIRST_PAGE.code()));
+        Integer lastPage = createNumericValue(entity.get(AcademicField.EXT_LAST_PAGE.code()));
         if(firstPage != null && lastPage != null) {
             this.setPages(String.format("%d-%d", firstPage, lastPage));
         } else if(firstPage != null) {
@@ -55,16 +55,17 @@ public class AcademicPaper extends Paper {
         } else if(lastPage != null) {
             this.setPages(lastPage.toString());
         }
-        this.setBt((String) extensions.get(AcademicField.EXT_BT.code()));
+        this.setDoi(StringUtils.stripToNull((String) entity.get(AcademicField.EXT_DOI.code())));
+        this.setBt((String) entity.get(AcademicField.EXT_BT.code()));
         this.setType(PaperType.ARTICLE);
     }
 
-    private Source createSource(Map<String, Object> extensions) {
+    private Source createSource(Map<String, Object> entity) {
         Source source = new Source();
-        source.setVenue((String) extensions.get(AcademicField.EXT_VENUE_FULL.code()));
-        source.setVenueShort((String) extensions.get(AcademicField.EXT_VENUE_SHORT.code()));
-        source.setPublisher((String) extensions.get(AcademicField.EXT_PUBLISHER.code()));
-        source.setName((String) extensions.get(AcademicField.EXT_JOURNAL.code()));
+        source.setVenue((String) entity.get(AcademicField.EXT_VENUE_FULL.code()));
+        source.setVenueShort((String) entity.get(AcademicField.EXT_VENUE_SHORT.code()));
+        source.setPublisher((String) entity.get(AcademicField.EXT_PUBLISHER.code()));
+        source.setName((String) entity.get(AcademicField.EXT_JOURNAL.code()));
         if(StringUtils.isBlank(source.getName()) && StringUtils.isNotBlank(source.getVenue())) {
             source.setName(source.getVenue());
         }
@@ -108,13 +109,18 @@ public class AcademicPaper extends Paper {
         List<Author> results = new ArrayList<>();
         for (Map<String, Object> entity : values) {
             Author author = new Author();
-            Number idValue = (Number) entity.get(AcademicField.AUTHOR_ID.code());
+            Number idValue = (Number) entity.get(AcademicField.AUTHOR_ID.codeFragment());
             if(idValue != null) {
                 author.setId(idValue.toString());
             }
-            author.setFirstName((String) entity.get("FN"));
-            author.setLastName((String) entity.get("LN"));
-            author.setOrder((Integer) entity.get(AcademicField.AUTHOR_ORDER.code()));
+            String fullName = (String) entity.get(AcademicField.AUTHOR_ORIGINAL_NAME.codeFragment());
+            String firstName = StringUtils.substringBeforeLast(fullName, " ");
+            String lastName = StringUtils.substringAfterLast(fullName, " ");
+            author.setFirstName(firstName);
+            author.setLastName(lastName);
+            String affiliation = (String) entity.get(AcademicField.AUTHOR_ORIGINAL_AFFILIATION.codeFragment());
+            author.setAffiliation(StringUtils.stripToNull(affiliation));
+            author.setOrder((Integer) entity.get(AcademicField.AUTHOR_ORDER.codeFragment()));
             results.add(author);
         }
         return results;
