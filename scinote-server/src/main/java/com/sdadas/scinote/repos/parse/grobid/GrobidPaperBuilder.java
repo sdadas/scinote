@@ -32,7 +32,7 @@ public class GrobidPaperBuilder {
         paper.getSource().setName(filename);
         paper.setType(PaperType.ARTICLE);
         paper.setAuthors(createAuthors());
-        paper.addUrl(new WebLocation("pdf", "/pdf/" + paperId + ".pdf"));
+        paper.addUrl(new WebLocation(filename, "/pdf/" + paperId + ".pdf"));
         return paper;
     }
 

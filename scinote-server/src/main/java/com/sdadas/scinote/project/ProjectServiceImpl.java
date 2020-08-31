@@ -136,8 +136,9 @@ public class ProjectServiceImpl implements ProjectService {
             String fileId = RandomStringUtils.randomAlphanumeric(32);
             try {
                 File file = filesConfig.fileFromResource(attachRequest.getResource(), fileId);
-                WebLocation url = new WebLocation("pdf", "/pdf/" + file.getName());
+                WebLocation url = new WebLocation(attachRequest.getFilename(), "/pdf/" + file.getName());
                 projectPaper.addFile(url);
+                res.setResult(projectPaper);
             } catch (IOException e) {
                 res.error("Error on file upload");
             }

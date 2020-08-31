@@ -85,13 +85,13 @@ public class ProjectController {
         return service.getSuggestions(projectId, num);
     }
 
-    @PostMapping(path = "/project/{projectId}/{paperId}/upload", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/project/{projectId}/{repo}/{paperId}/upload", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ActionResponse> upload(@PathVariable String projectId, @PathVariable String paperId,
-                                                 @RequestParam("file") MultipartFile file) {
+                                                 @PathVariable String repo, @RequestParam("file") MultipartFile file) {
         if(file.isEmpty()) return ResponseEntity.badRequest().build();
         PaperAttachFileRequest request = new PaperAttachFileRequest();
         request.setProjectId(projectId);
-        request.setPaperId(PaperId.fromString(paperId, ","));
+        request.setPaperId(new PaperId(repo, paperId));
         request.setFilename(file.getOriginalFilename());
         request.setResource(file.getResource());
         ActionResponse response = service.paperAction(request);

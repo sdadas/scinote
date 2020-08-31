@@ -90,6 +90,10 @@ class APIService {
         return `${this.baseURL}/paper/${paperId.repo}/${paperId.id}/bibtex.bib`;
     }
 
+    public paperUploadAttachment(projectId: string, paperId: PaperId): string {
+        return `${this.baseURL}/project/${projectId}/${paperId.repo}/${paperId.id}/upload`;
+    }
+
     private post(url: string, body: any): Promise<any> {
         const headers = new Headers({'Content-Type': 'application/json'});
         const init: RequestInit = {method: "POST", body: JSON.stringify(body), headers: headers};

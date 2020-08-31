@@ -62,6 +62,7 @@ export interface ProjectPaper {
     notes?: string;
     tags: string[];
     added: number;
+    files?: WebLocation[];
 }
 
 export interface PaperDetails {

@@ -1,13 +1,15 @@
 import * as React from "react";
-import {EditPaperRequest, Paper, PaperActionRequest, ProjectPaper, WebLocation} from "../../model";
-import {Popover, Skeleton, Tag} from "antd";
+import {EditPaperRequest, Paper, PaperActionRequest, ProjectPaper, UIAction, WebLocation} from "../../model";
+import {Button, message, Popover, Skeleton, Tag, Upload} from "antd";
 import {Inplace} from "../utils/inplace";
 import {FileOutlined, TagsOutlined, LinkOutlined, DownCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined, FormOutlined} from '@ant-design/icons';
 import {api} from "../../service/api";
 import {TagsInput} from "./tags";
+import {UploadProps} from "antd/lib/upload/Upload";
 
 interface PaperCardProps {
     projectPaper: ProjectPaper;
+    projectId: string;
     paper?: Paper;
     editEvent: Function;
     actionEvent: Function;
@@ -17,6 +19,7 @@ interface PaperCardProps {
 interface PaperCardState {
     notes: string;
     tags: string[];
+    files?: WebLocation[];
 }
 
 export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
@@ -24,7 +27,7 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
     constructor(props: Readonly<any>) {
         super(props);
         const pp = this.props.projectPaper;
-        this.state = {notes: pp.notes, tags: pp.tags};
+        this.state = {notes: pp.notes, tags: pp.tags, files: pp.files};
     }
 
     private editNotes(value: string) {
@@ -150,16 +153,59 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
                     <QuestionCircleOutlined onClick={() => this.paperAction("READ_LATER")}  className="paper-actions-menu-icon" title="Read later" />
                 </div>
                 <a href={bibtexUrl} target="_blank">Export to BibTeX</a>
+                {this.uploadAction()}
             </div>
+        )
+    }
+
+    private uploadAction(): React.ReactElement {
+        const props: UploadProps = {
+            name: "file",
+            action: api.paperUploadAttachment(this.props.projectId, this.props.projectPaper.id),
+            showUploadList: false,
+            onChange: (info) => {
+                if (info.file.status === 'done') {
+                    const response: any = info.file.response;
+                    if(response.error) {
+                        message.error(response.error);
+                    } else {
+                        message.success(`${info.file.name} file uploaded successfully`);
+                        this.setState({...this.state, files: response.result.files});
+                    }
+                } else if (info.file.status === 'error') {
+                    message.error(`${info.file.name} file upload failed.`);
+                }
+            }
+        };
+        return (
+            <Upload {...props}>
+                <Button type="link">Upload attachment</Button>
+            </Upload>
         )
     }
 
     private links(): React.ReactElement {
         const urls: WebLocation[] = this.props.paper.urls;
-        const elements = urls.map(val => {
-            return <div key={val.url}><a href={this.url(val)} title={val.url} target="_blank">{this.abbrUrl(val.url, 40)}</a></div>
+        const paperLinks = urls.map(val => {
+            return (
+                <div key={val.url}>
+                    <a href={this.url(val)} title={val.url} target="_blank">{this.abbrUrl(val.url, 40)}</a>
+                </div>
+            );
         });
-        return <div className="paper-links">{elements}</div>;
+        let attachedLinks = [];
+        if(this.state.files) {
+            attachedLinks = this.state.files.map(val => {
+                return (
+                    <div key={val.url}>
+                        <a href={this.url(val)} title={val.url} target="_blank">
+                            <LinkOutlined />&nbsp;{this.abbrUrl(val.name, 40)}
+                        </a>
+                    </div>
+                );
+            })
+        }
+        return <div className="paper-links">{paperLinks}{attachedLinks}</div>;
     }
 
     private url(url: WebLocation): string {

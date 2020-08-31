@@ -347,7 +347,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
             const cardKey = val.key + this.state.refreshed.toString();
             if(matcher.matches(val.paper, val.projectPaper)) {
                 return <PaperCard projectPaper={val.projectPaper} paper={val.paper} key={cardKey}
-                                  editEvent={req => this.editPaper(req)}
+                                  projectId={this.props.id} editEvent={req => this.editPaper(req)}
                                   actionEvent={req => this.paperAction(req, null)} />
             } else {
                 return null;
@@ -372,7 +372,7 @@ export class ProjectView extends React.Component<ProjectProps, ProjectState> {
             const projectPaper: ProjectPaper = {added: new Date().getTime(), tags: [], notes: null, id: paperId};
             const cardKey = this.paperKey(paperId) + this.state.refreshed.toString();
             return <PaperCard paper={val} projectPaper={projectPaper} editEvent={() => {}} key={cardKey} readonly
-                              actionEvent={req => this.paperAction(req, null)}/>
+                              projectId={this.props.id} actionEvent={req => this.paperAction(req, null)}/>
         })
         return (
             <div className="project-papers-panel">

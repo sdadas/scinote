@@ -1,5 +1,6 @@
 package com.sdadas.scinote.api;
 
+import com.sdadas.scinote.shared.FilesConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -20,16 +21,16 @@ import java.io.IOException;
 @RestController
 public class FilesController {
 
-    private final String storageDir;
+    private final FilesConfig config;
 
     @Autowired
-    public FilesController(@Value("${paper.parser.storageDir}") String storageDir) {
-        this.storageDir = storageDir;
+    public FilesController(FilesConfig config) {
+        this.config = config;
     }
 
     @GetMapping("/pdf/{fileName}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException {
-        File baseDir = new File(storageDir);
+        File baseDir = new File(config.getStorageDir());
         File file = new File(baseDir, fileName);
         if(!file.exists()) {
             return ResponseEntity.notFound().build();
