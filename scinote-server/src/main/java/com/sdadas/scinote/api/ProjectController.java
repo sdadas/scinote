@@ -1,19 +1,21 @@
 package com.sdadas.scinote.api;
 
 import com.sdadas.scinote.project.ProjectService;
-import com.sdadas.scinote.project.model.EditPaperRequest;
-import com.sdadas.scinote.project.model.EditProjectRequest;
-import com.sdadas.scinote.project.model.PaperActionRequest;
-import com.sdadas.scinote.project.model.ProjectActionRequest;
+import com.sdadas.scinote.project.model.*;
 import com.sdadas.scinote.project.model.graph.ProjectGraph;
+import com.sdadas.scinote.repos.parse.model.ParseRequest;
+import com.sdadas.scinote.repos.parse.model.ParseResponse;
 import com.sdadas.scinote.shared.model.paper.Paper;
+import com.sdadas.scinote.shared.model.paper.PaperId;
 import com.sdadas.scinote.shared.model.project.Project;
 import com.sdadas.scinote.shared.model.project.ProjectInfo;
 import com.sdadas.scinote.shared.model.validation.ActionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -81,6 +83,19 @@ public class ProjectController {
     @GetMapping(path = "/project/{projectId}/suggestions", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Paper> projectSuggestions(@PathVariable String projectId, @RequestParam(defaultValue = "10") Integer num) {
         return service.getSuggestions(projectId, num);
+    }
+
+    @PostMapping(path = "/project/{projectId}/{paperId}/upload", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ActionResponse> upload(@PathVariable String projectId, @PathVariable String paperId,
+                                                 @RequestParam("file") MultipartFile file) {
+        if(file.isEmpty()) return ResponseEntity.badRequest().build();
+        PaperAttachFileRequest request = new PaperAttachFileRequest();
+        request.setProjectId(projectId);
+        request.setPaperId(PaperId.fromString(paperId, ","));
+        request.setFilename(file.getOriginalFilename());
+        request.setResource(file.getResource());
+        ActionResponse response = service.paperAction(request);
+        return ResponseEntity.ok(response);
     }
 
     private void prepareResponse(ActionResponse response) {

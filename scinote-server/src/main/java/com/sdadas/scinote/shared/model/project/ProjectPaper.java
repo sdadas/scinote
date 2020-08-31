@@ -1,8 +1,10 @@
 package com.sdadas.scinote.shared.model.project;
 
 import com.sdadas.scinote.shared.model.paper.PaperId;
+import com.sdadas.scinote.shared.model.paper.WebLocation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,6 +18,8 @@ public class ProjectPaper implements Serializable {
     private String notes;
 
     private List<String> tags;
+
+    private List<WebLocation> files;
 
     private Long added;
 
@@ -57,6 +61,21 @@ public class ProjectPaper implements Serializable {
 
     public void setAdded(Long added) {
         this.added = added;
+    }
+
+    public List<WebLocation> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<WebLocation> files) {
+        this.files = files;
+    }
+
+    public void addFile(WebLocation url) {
+        if(this.files == null) {
+            this.files = new ArrayList<>();
+        }
+        this.files.add(url);
     }
 
     @Override

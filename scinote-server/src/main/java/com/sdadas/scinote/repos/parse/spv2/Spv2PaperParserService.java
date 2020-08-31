@@ -9,6 +9,7 @@ import com.sdadas.scinote.repos.parse.model.ParseResponse;
 import com.sdadas.scinote.repos.parse.spv2.model.Spv2Response;
 import com.sdadas.scinote.repos.parse.spv2.rest.Spv2RestClient;
 import com.sdadas.scinote.repos.shared.exception.ExternalServiceException;
+import com.sdadas.scinote.shared.FilesConfig;
 import com.sdadas.scinote.shared.model.paper.Paper;
 import com.sdadas.scinote.shared.model.paper.WebLocation;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -35,12 +36,15 @@ public class Spv2PaperParserService implements PaperParserService {
 
     private final PaperParserConfig config;
 
+    private final FilesConfig filesConfig;
+
     private final Spv2RestClient client;
 
     private volatile boolean serviceAvailable;
 
-    public Spv2PaperParserService(PaperParserConfig config) {
+    public Spv2PaperParserService(PaperParserConfig config, FilesConfig filesConfig) {
         this.config = config;
+        this.filesConfig = filesConfig;
         this.client = new Spv2RestClient(config.getSpv2Url());
         ForkJoinPool.commonPool().execute(() -> checkServiceAvailable(config.getSpv2Url()));
     }
@@ -92,7 +96,7 @@ public class Spv2PaperParserService implements PaperParserService {
 
     private void store(Resource resource, Paper paper) {
         String filename = RandomStringUtils.randomAlphanumeric(32) + ".pdf";
-        File output = new File(config.getStorageDir(), filename);
+        File output = new File(filesConfig.getStorageDir(), filename);
         ForkJoinPool.commonPool().submit(() -> {
             try(InputStream is = resource.getInputStream()) {
                 FileUtils.forceMkdirParent(output);

@@ -14,8 +14,6 @@ public class PaperParserConfig {
 
     private String grobidHome;
 
-    private String storageDir;
-
     public String getSpv2Url() {
         return spv2Url;
     }
@@ -30,13 +28,5 @@ public class PaperParserConfig {
 
     public void setGrobidHome(String grobidHome) {
         this.grobidHome = grobidHome;
-    }
-
-    public String getStorageDir() {
-        return storageDir;
-    }
-
-    public void setStorageDir(String storageDir) {
-        this.storageDir = storageDir;
     }
 }

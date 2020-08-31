@@ -5,16 +5,21 @@ import com.sdadas.scinote.cache.model.Cached;
 import com.sdadas.scinote.project.model.*;
 import com.sdadas.scinote.project.model.graph.ProjectGraph;
 import com.sdadas.scinote.repos.ReposService;
+import com.sdadas.scinote.shared.FilesConfig;
 import com.sdadas.scinote.shared.model.paper.Paper;
 import com.sdadas.scinote.shared.model.paper.PaperId;
+import com.sdadas.scinote.shared.model.paper.WebLocation;
 import com.sdadas.scinote.shared.model.project.Project;
 import com.sdadas.scinote.shared.model.project.ProjectInfo;
 import com.sdadas.scinote.shared.model.project.ProjectPaper;
 import com.sdadas.scinote.shared.model.validation.ActionResponse;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,10 +36,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final ReposService repos;
 
+    private final FilesConfig filesConfig;
+
     @Autowired
-    public ProjectServiceImpl(CacheService cache, ReposService repos) {
+    public ProjectServiceImpl(CacheService cache, ReposService repos, FilesConfig filesConfig) {
         this.cache = cache;
         this.repos = repos;
+        this.filesConfig = filesConfig;
         this.initCaches();
     }
 
@@ -96,6 +104,7 @@ public class ProjectServiceImpl implements ProjectService {
             case ACCEPT: acceptPaper(project, paper, paperId, res); break;
             case REJECT: rejectPaper(project, paper, paperId, res); break;
             case READ_LATER: readLaterPaper(project, paper, paperId, res); break;
+            case ATTACH: attachFileToPaper(project, request,  paperId, res); break;
         }
         cache.put(project.getId(), project, Project.class);
         return res;
@@ -117,6 +126,24 @@ public class ProjectServiceImpl implements ProjectService {
         Paper result = repos.fetchReferences(paper);
         project.readLater(result, paperId);
         res.setResult(result);
+    }
+
+    private void attachFileToPaper(Project project, PaperActionRequest request, PaperId paperId, ActionResponse res) {
+        ProjectPaper projectPaper = project.paper(paperId);
+        if(projectPaper == null) return;
+        if(request instanceof PaperAttachFileRequest && ((PaperAttachFileRequest) request).getResource() != null) {
+            PaperAttachFileRequest attachRequest = (PaperAttachFileRequest) request;
+            String fileId = RandomStringUtils.randomAlphanumeric(32);
+            try {
+                File file = filesConfig.fileFromResource(attachRequest.getResource(), fileId);
+                WebLocation url = new WebLocation("pdf", "/pdf/" + file.getName());
+                projectPaper.addFile(url);
+            } catch (IOException e) {
+                res.error("Error on file upload");
+            }
+        } else {
+            res.error("No file found");
+        }
     }
 
     @Override
