@@ -85,9 +85,9 @@ public class ProjectController {
         return service.getSuggestions(projectId, num);
     }
 
-    @PostMapping(path = "/project/{projectId}/{repo}/{paperId}/upload", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ActionResponse> upload(@PathVariable String projectId, @PathVariable String paperId,
-                                                 @PathVariable String repo, @RequestParam("file") MultipartFile file) {
+    @PostMapping(path = "/project/{projectId}/upload", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ActionResponse> upload(@PathVariable String projectId, @RequestParam String paperId,
+                                                 @RequestParam String repo, @RequestParam("file") MultipartFile file) {
         if(file.isEmpty()) return ResponseEntity.badRequest().build();
         PaperAttachFileRequest request = new PaperAttachFileRequest();
         request.setProjectId(projectId);

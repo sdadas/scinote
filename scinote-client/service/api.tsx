@@ -91,7 +91,7 @@ class APIService {
     }
 
     public paperUploadAttachment(projectId: string, paperId: PaperId): string {
-        return `${this.baseURL}/project/${projectId}/${paperId.repo}/${paperId.id}/upload`;
+        return `${this.baseURL}/project/${projectId}/upload?paperId=${paperId.id}&repo=${paperId.repo}`;
     }
 
     private post(url: string, body: any): Promise<any> {

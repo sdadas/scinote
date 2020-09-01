@@ -1,8 +1,8 @@
 import * as React from "react";
-import {EditPaperRequest, Paper, PaperActionRequest, ProjectPaper, UIAction, WebLocation} from "../../model";
+import {EditPaperRequest, Paper, PaperActionRequest, ProjectPaper, WebLocation} from "../../model";
 import {Button, message, Popover, Skeleton, Tag, Upload} from "antd";
 import {Inplace} from "../utils/inplace";
-import {FileOutlined, TagsOutlined, LinkOutlined, DownCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined, FormOutlined} from '@ant-design/icons';
+import {FileOutlined, TagsOutlined, LinkOutlined, DownCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined, FormOutlined, GlobalOutlined} from '@ant-design/icons';
 import {api} from "../../service/api";
 import {TagsInput} from "./tags";
 import {UploadProps} from "antd/lib/upload/Upload";
@@ -68,7 +68,7 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
         const yearBadge = year ? <Tag className="paper-year">{year}</Tag> : null;
         if(urls && urls.length) {
             const url = urls[0];
-            return <span>{yearBadge}<a className="paper-title" href={this.url(url)} target="_blank">{title}</a></span>
+            return <span>{yearBadge}<a className="paper-title" href={this.url(url.url)} target="_blank">{title}</a></span>
         } else {
             return <span className="paper-title">{yearBadge}{title}</span>
         }
@@ -186,34 +186,30 @@ export class PaperCard extends React.Component<PaperCardProps, PaperCardState> {
 
     private links(): React.ReactElement {
         const urls: WebLocation[] = this.props.paper.urls;
-        const paperLinks = urls.map(val => {
-            return (
-                <div key={val.url}>
-                    <a href={this.url(val)} title={val.url} target="_blank">{this.abbrUrl(val.url, 40)}</a>
-                </div>
-            );
-        });
+        const paperLinks = urls.map(val => this.link(val.url, val.url, <GlobalOutlined/>));
         let attachedLinks = [];
         if(this.state.files) {
-            attachedLinks = this.state.files.map(val => {
-                return (
-                    <div key={val.url}>
-                        <a href={this.url(val)} title={val.url} target="_blank">
-                            <LinkOutlined />&nbsp;{this.abbrUrl(val.name, 40)}
-                        </a>
-                    </div>
-                );
-            })
+            attachedLinks = this.state.files.map(val => this.link(val.url, val.name, <LinkOutlined/>));
         }
         return <div className="paper-links">{paperLinks}{attachedLinks}</div>;
     }
 
-    private url(url: WebLocation): string {
-        const lower = url.url.toLowerCase();
+    private link(url: string, name: string, icon: React.ReactElement): React.ReactElement {
+        return (
+            <div key={url}>
+                <a href={this.url(url)} title={url} target="_blank">
+                    {icon}&nbsp;&nbsp;{this.abbrUrl(name, 40)}
+                </a>
+            </div>
+        );
+    }
+
+    private url(url: string): string {
+        const lower = url.toLowerCase();
         if(lower.startsWith("http://") || lower.startsWith("https://") || lower.startsWith("www")) {
-            return url.url;
+            return url;
         } else {
-            return api.fileUrl(url.url);
+            return api.fileUrl(url);
         }
     }
 
